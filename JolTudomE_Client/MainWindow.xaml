@@ -3,7 +3,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
+        xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
         xmlns:vm="clr-namespace:JolTudomE_Client.ViewModel"
         xmlns:helper="clr-namespace:JolTudomE_Client.Helper"
         WindowStartupLocation="CenterScreen"
@@ -14,7 +14,7 @@
     <helper:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
   </Window.Resources>
   <Window.DataContext>
-    <Binding Path="Main" Source="{StaticResource VMLocator}"/>
+    <Binding Mode="OneWay" Path="Main" Source="{StaticResource VMLocator}"/>
   </Window.DataContext>
 
   <DockPanel>

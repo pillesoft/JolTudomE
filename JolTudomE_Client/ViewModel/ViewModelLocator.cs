@@ -51,9 +51,7 @@ namespace JolTudomE_Client.ViewModel {
       SimpleIoc.Default.Register<AdmTopicCWViewModel>();
 
       SimpleIoc.Default.Register<TestDetailsViewModel>();
-      
     }
-
     public MainViewModel Main {
       get {
         return ServiceLocator.Current.GetInstance<MainViewModel>();

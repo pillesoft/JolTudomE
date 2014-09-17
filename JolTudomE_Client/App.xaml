@@ -1,12 +1,4 @@
-﻿<Application x:Class="JolTudomE_Client.App" 
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:views="clr-namespace:JolTudomE_Client.View"
-             xmlns:vm="clr-namespace:JolTudomE_Client.ViewModel"
-             d1p1:Ignorable="d" 
-             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             Startup="Application_Startup" StartupUri="MainWindow.xaml">
+<Application x:Class="JolTudomE_Client.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:views="clr-namespace:JolTudomE_Client.View" xmlns:vm="clr-namespace:JolTudomE_Client.ViewModel" d1p1:Ignorable="d" xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" Startup="Application_Startup" StartupUri="MainWindow.xaml">
   <Application.Resources>
     <vm:ViewModelLocator x:Key="VMLocator" />
     <DataTemplate DataType="{x:Type vm:LoginViewModel}">
@@ -42,15 +34,14 @@
     <Style x:Key="myErrorTemplate" TargetType="Control">
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="0,2,40,2" />
-      <Setter Property="Validation.ErrorTemplate" >
+      <Setter Property="Validation.ErrorTemplate">
         <Setter.Value>
           <ControlTemplate>
             <DockPanel LastChildFill="true">
-              <Border Background="Red" DockPanel.Dock="right" Margin="5,0,0,0" Width="20" Height="20" CornerRadius="10"
-                            ToolTip="{Binding ElementName=customAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}">
+              <Border Background="Red" DockPanel.Dock="right" Margin="5,0,0,0" Width="20" Height="20" CornerRadius="10" ToolTip="{Binding ElementName=customAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}">
                 <TextBlock Text="!" VerticalAlignment="center" HorizontalAlignment="center" FontWeight="Bold" Foreground="white" />
               </Border>
-              <AdornedElementPlaceholder Name="customAdorner" VerticalAlignment="Center" >
+              <AdornedElementPlaceholder Name="customAdorner" VerticalAlignment="Center">
                 <Border BorderBrush="red" BorderThickness="1" />
               </AdornedElementPlaceholder>
             </DockPanel>

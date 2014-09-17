@@ -683,7 +683,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -702,7 +702,7 @@ namespace JolTudomE_WS.DAL
                 {
                     OnTokenChanging(value);
                     ReportPropertyChanging("Token");
-                    _Token = StructuralObject.SetValidValue(value, false);
+                    _Token = StructuralObject.SetValidValue(value, false, "Token");
                     ReportPropertyChanged("Token");
                     OnTokenChanged();
                 }
@@ -727,7 +727,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnLastActionChanging(value);
                 ReportPropertyChanging("LastAction");
-                _LastAction = StructuralObject.SetValidValue(value);
+                _LastAction = StructuralObject.SetValidValue(value, "LastAction");
                 ReportPropertyChanged("LastAction");
                 OnLastActionChanged();
             }
@@ -751,7 +751,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnPersonIDChanging(value);
                 ReportPropertyChanging("PersonID");
-                _PersonID = StructuralObject.SetValidValue(value);
+                _PersonID = StructuralObject.SetValidValue(value, "PersonID");
                 ReportPropertyChanged("PersonID");
                 OnPersonIDChanged();
             }
@@ -775,7 +775,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnRoleIDChanging(value);
                 ReportPropertyChanging("RoleID");
-                _RoleID = StructuralObject.SetValidValue(value);
+                _RoleID = StructuralObject.SetValidValue(value, "RoleID");
                 ReportPropertyChanged("RoleID");
                 OnRoleIDChanged();
             }
@@ -786,7 +786,6 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-    
     }
 
     #endregion
@@ -818,7 +817,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -835,7 +834,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnCourseIDChanging(value);
                 ReportPropertyChanging("CourseID");
-                _CourseID = StructuralObject.SetValidValue(value);
+                _CourseID = StructuralObject.SetValidValue(value, "CourseID");
                 ReportPropertyChanged("CourseID");
                 OnCourseIDChanged();
             }
@@ -859,7 +858,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnCourseNameChanging(value);
                 ReportPropertyChanging("CourseName");
-                _CourseName = StructuralObject.SetValidValue(value, false);
+                _CourseName = StructuralObject.SetValidValue(value, false, "CourseName");
                 ReportPropertyChanged("CourseName");
                 OnCourseNameChanged();
             }
@@ -883,7 +882,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnCourseDescriptionChanging(value);
                 ReportPropertyChanging("CourseDescription");
-                _CourseDescription = StructuralObject.SetValidValue(value, true);
+                _CourseDescription = StructuralObject.SetValidValue(value, true, "CourseDescription");
                 ReportPropertyChanged("CourseDescription");
                 OnCourseDescriptionChanged();
             }
@@ -925,7 +924,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -942,7 +941,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnPrefixChanging(value);
                 ReportPropertyChanging("Prefix");
-                _Prefix = StructuralObject.SetValidValue(value, true);
+                _Prefix = StructuralObject.SetValidValue(value, true, "Prefix");
                 ReportPropertyChanged("Prefix");
                 OnPrefixChanged();
             }
@@ -966,7 +965,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnFirstNameChanging(value);
                 ReportPropertyChanging("FirstName");
-                _FirstName = StructuralObject.SetValidValue(value, false);
+                _FirstName = StructuralObject.SetValidValue(value, false, "FirstName");
                 ReportPropertyChanged("FirstName");
                 OnFirstNameChanged();
             }
@@ -990,7 +989,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnMiddleNameChanging(value);
                 ReportPropertyChanging("MiddleName");
-                _MiddleName = StructuralObject.SetValidValue(value, true);
+                _MiddleName = StructuralObject.SetValidValue(value, true, "MiddleName");
                 ReportPropertyChanged("MiddleName");
                 OnMiddleNameChanged();
             }
@@ -1014,7 +1013,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnLastNameChanging(value);
                 ReportPropertyChanging("LastName");
-                _LastName = StructuralObject.SetValidValue(value, false);
+                _LastName = StructuralObject.SetValidValue(value, false, "LastName");
                 ReportPropertyChanged("LastName");
                 OnLastNameChanged();
             }
@@ -1038,7 +1037,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnPersonIDChanging(value);
                 ReportPropertyChanging("PersonID");
-                _PersonID = StructuralObject.SetValidValue(value);
+                _PersonID = StructuralObject.SetValidValue(value, "PersonID");
                 ReportPropertyChanged("PersonID");
                 OnPersonIDChanged();
             }
@@ -1062,7 +1061,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnRoleIDChanging(value);
                 ReportPropertyChanging("RoleID");
-                _RoleID = StructuralObject.SetValidValue(value);
+                _RoleID = StructuralObject.SetValidValue(value, "RoleID");
                 ReportPropertyChanged("RoleID");
                 OnRoleIDChanged();
             }
@@ -1102,7 +1101,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1119,7 +1118,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnTestIDChanging(value);
                 ReportPropertyChanging("TestID");
-                _TestID = StructuralObject.SetValidValue(value);
+                _TestID = StructuralObject.SetValidValue(value, "TestID");
                 ReportPropertyChanged("TestID");
                 OnTestIDChanged();
             }
@@ -1143,7 +1142,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnGeneratedChanging(value);
                 ReportPropertyChanging("Generated");
-                _Generated = StructuralObject.SetValidValue(value);
+                _Generated = StructuralObject.SetValidValue(value, "Generated");
                 ReportPropertyChanged("Generated");
                 OnGeneratedChanged();
             }
@@ -1167,7 +1166,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnQuestionsChanging(value);
                 ReportPropertyChanging("Questions");
-                _Questions = StructuralObject.SetValidValue(value);
+                _Questions = StructuralObject.SetValidValue(value, "Questions");
                 ReportPropertyChanged("Questions");
                 OnQuestionsChanged();
             }
@@ -1191,7 +1190,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnCorrectAnswerChanging(value);
                 ReportPropertyChanging("CorrectAnswer");
-                _CorrectAnswer = StructuralObject.SetValidValue(value);
+                _CorrectAnswer = StructuralObject.SetValidValue(value, "CorrectAnswer");
                 ReportPropertyChanged("CorrectAnswer");
                 OnCorrectAnswerChanged();
             }
@@ -1215,7 +1214,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnPercentChanging(value);
                 ReportPropertyChanging("Percent");
-                _Percent = StructuralObject.SetValidValue(value);
+                _Percent = StructuralObject.SetValidValue(value, "Percent");
                 ReportPropertyChanged("Percent");
                 OnPercentChanged();
             }
@@ -1239,7 +1238,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnTotalTimeChanging(value);
                 ReportPropertyChanging("TotalTime");
-                _TotalTime = StructuralObject.SetValidValue(value);
+                _TotalTime = StructuralObject.SetValidValue(value, "TotalTime");
                 ReportPropertyChanged("TotalTime");
                 OnTotalTimeChanged();
             }
@@ -1277,7 +1276,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1294,7 +1293,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnQuestionTextChanging(value);
                 ReportPropertyChanging("QuestionText");
-                _QuestionText = StructuralObject.SetValidValue(value, false);
+                _QuestionText = StructuralObject.SetValidValue(value, false, "QuestionText");
                 ReportPropertyChanged("QuestionText");
                 OnQuestionTextChanged();
             }
@@ -1318,7 +1317,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnChekedAnswerChanging(value);
                 ReportPropertyChanging("ChekedAnswer");
-                _ChekedAnswer = StructuralObject.SetValidValue(value, true);
+                _ChekedAnswer = StructuralObject.SetValidValue(value, true, "ChekedAnswer");
                 ReportPropertyChanged("ChekedAnswer");
                 OnChekedAnswerChanged();
             }
@@ -1342,7 +1341,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnCorrectAnswerChanging(value);
                 ReportPropertyChanging("CorrectAnswer");
-                _CorrectAnswer = StructuralObject.SetValidValue(value, false);
+                _CorrectAnswer = StructuralObject.SetValidValue(value, false, "CorrectAnswer");
                 ReportPropertyChanged("CorrectAnswer");
                 OnCorrectAnswerChanged();
             }
@@ -1380,7 +1379,7 @@ namespace JolTudomE_WS.DAL
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1397,7 +1396,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnTopicIDChanging(value);
                 ReportPropertyChanging("TopicID");
-                _TopicID = StructuralObject.SetValidValue(value);
+                _TopicID = StructuralObject.SetValidValue(value, "TopicID");
                 ReportPropertyChanged("TopicID");
                 OnTopicIDChanged();
             }
@@ -1421,7 +1420,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnTopicNameChanging(value);
                 ReportPropertyChanging("TopicName");
-                _TopicName = StructuralObject.SetValidValue(value, false);
+                _TopicName = StructuralObject.SetValidValue(value, false, "TopicName");
                 ReportPropertyChanged("TopicName");
                 OnTopicNameChanged();
             }
@@ -1445,7 +1444,7 @@ namespace JolTudomE_WS.DAL
             {
                 OnTopicDescriptionChanging(value);
                 ReportPropertyChanging("TopicDescription");
-                _TopicDescription = StructuralObject.SetValidValue(value, true);
+                _TopicDescription = StructuralObject.SetValidValue(value, true, "TopicDescription");
                 ReportPropertyChanged("TopicDescription");
                 OnTopicDescriptionChanged();
             }
@@ -1460,5 +1459,4 @@ namespace JolTudomE_WS.DAL
 
     #endregion
 
-    
 }

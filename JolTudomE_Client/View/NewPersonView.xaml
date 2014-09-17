@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:JolTudomE_Client.ViewModel"
              xmlns:helper="clr-namespace:JolTudomE_Client.Helper"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-             xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
+             xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
              mc:Ignorable="d" 
              HorizontalAlignment="Left" VerticalAlignment="Top"
 	>

@@ -7,7 +7,7 @@
       xmlns:model="clr-namespace:JolTudomE_Client.Model"
       xmlns:wsmodel="clr-namespace:JolTudomE_Client.JolTudomEWSService"
       xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-      xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
+      xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
       mc:Ignorable="d" 
       xmlns:vm="clr-namespace:JolTudomE_Client.ViewModel"
 	>

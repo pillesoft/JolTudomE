@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.ComponentModel;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -157,7 +157,7 @@ namespace JolTudomE_Client.ViewModel {
             if (m.UserState != null && m.UserState.ToString() == "SessionExpired") {
               IscmdLogoutVisible = false;
               IsAdminVisible = false;
-              WelcomeString = "LejÃ¡rt a Session. KÃ©rlek, jelentkezz be Ãºjra.";
+              WelcomeString = "Lejárt a Session. Kérlek, jelentkezz be újra.";
             }
             break;
           case ViewEnum.Student:
