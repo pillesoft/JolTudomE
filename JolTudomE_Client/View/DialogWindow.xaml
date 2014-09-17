@@ -1,0 +1,16 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="JolTudomE_Client.View.DialogWindow"
+        Title="DialogWindow" ShowInTaskbar="False" Topmost="True" WindowStartupLocation="CenterOwner" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="250" >
+  <DockPanel LastChildFill="False">
+    <TextBlock x:Name="txtMessage" Margin="10" TextWrapping="Wrap" DockPanel.Dock="Top"/>
+    <StackPanel DockPanel.Dock="Bottom">
+      <Rectangle Fill="Black" Height="2" VerticalAlignment="Bottom" Width="382"  Margin="5,0,5,0"  />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" >
+        <Button x:Name="cmdDefault" Content="Default" Margin="3" Width="100" Click="cmdDefault_Click"/>
+        <Button x:Name="cmdCancel" Content="Cancel" Margin="3" Width="100" Click="cmdCancel_Click"/>
+      </StackPanel>
+    </StackPanel>
+  </DockPanel>
+</Window>
