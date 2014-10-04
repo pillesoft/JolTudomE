@@ -15,32 +15,14 @@ namespace Phone1 {
     // Constructor
     public MainPage() {
       InitializeComponent();
-
-      // Set the data context of the LongListSelector control to the sample data
-      DataContext = App.ViewModel;
+      Loaded += MainPage_Loaded;
 
       // Sample code to localize the ApplicationBar
       //BuildLocalizedApplicationBar();
     }
 
-    // Load data for the ViewModel Items
-    protected override void OnNavigatedTo(NavigationEventArgs e) {
-      if (!App.ViewModel.IsDataLoaded) {
-        App.ViewModel.LoadData();
-      }
-    }
-
-    // Handle selection changed on LongListSelector
-    private void MainLongListSelector_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      // If selected item is null (no selection) do nothing
-      if (MainLongListSelector.SelectedItem == null)
-        return;
-
-      // Navigate to the new page
-      NavigationService.Navigate(new Uri("/DetailsPage.xaml?selectedItem=" + (MainLongListSelector.SelectedItem as ItemViewModel).ID, UriKind.Relative));
-
-      // Reset selected item to null (no selection)
-      MainLongListSelector.SelectedItem = null;
+    void MainPage_Loaded(object sender, RoutedEventArgs e) {
+      App.RootFrame.Navigate(new System.Uri("/View/LoginView.xaml", System.UriKind.Relative));
     }
 
     // Sample code for building a localized ApplicationBar
@@ -58,5 +40,6 @@ namespace Phone1 {
     //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
     //    ApplicationBar.MenuItems.Add(appBarMenuItem);
     //}
+
   }
 }

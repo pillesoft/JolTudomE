@@ -136,5 +136,77 @@ namespace JolTudomE_Api.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_GetTopics_Result>("usp_GetTopics", courseidParameter);
         }
+    
+        public virtual ObjectResult<usp_Statistics_Result> usp_Statistics(Nullable<int> person, Nullable<int> callerid, Nullable<int> roleid)
+        {
+            var personParameter = person.HasValue ?
+                new ObjectParameter("person", person) :
+                new ObjectParameter("person", typeof(int));
+    
+            var calleridParameter = callerid.HasValue ?
+                new ObjectParameter("callerid", callerid) :
+                new ObjectParameter("callerid", typeof(int));
+    
+            var roleidParameter = roleid.HasValue ?
+                new ObjectParameter("roleid", roleid) :
+                new ObjectParameter("roleid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Statistics_Result>("usp_Statistics", personParameter, calleridParameter, roleidParameter);
+        }
+    
+        public virtual ObjectResult<usp_Eval_Result> usp_Eval(Nullable<int> testid, Nullable<int> person, Nullable<int> callerid, Nullable<int> roleid)
+        {
+            var testidParameter = testid.HasValue ?
+                new ObjectParameter("testid", testid) :
+                new ObjectParameter("testid", typeof(int));
+    
+            var personParameter = person.HasValue ?
+                new ObjectParameter("person", person) :
+                new ObjectParameter("person", typeof(int));
+    
+            var calleridParameter = callerid.HasValue ?
+                new ObjectParameter("callerid", callerid) :
+                new ObjectParameter("callerid", typeof(int));
+    
+            var roleidParameter = roleid.HasValue ?
+                new ObjectParameter("roleid", roleid) :
+                new ObjectParameter("roleid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_Eval_Result>("usp_Eval", testidParameter, personParameter, calleridParameter, roleidParameter);
+        }
+    
+        public virtual int usp_CancelTest(Nullable<int> testid, Nullable<int> person)
+        {
+            var testidParameter = testid.HasValue ?
+                new ObjectParameter("testid", testid) :
+                new ObjectParameter("testid", typeof(int));
+    
+            var personParameter = person.HasValue ?
+                new ObjectParameter("person", person) :
+                new ObjectParameter("person", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_CancelTest", testidParameter, personParameter);
+        }
+    
+        public virtual int usp_CheckedAnswer(Nullable<int> testid, Nullable<int> questionid, Nullable<int> answerid, Nullable<bool> complete)
+        {
+            var testidParameter = testid.HasValue ?
+                new ObjectParameter("testid", testid) :
+                new ObjectParameter("testid", typeof(int));
+    
+            var questionidParameter = questionid.HasValue ?
+                new ObjectParameter("questionid", questionid) :
+                new ObjectParameter("questionid", typeof(int));
+    
+            var answeridParameter = answerid.HasValue ?
+                new ObjectParameter("answerid", answerid) :
+                new ObjectParameter("answerid", typeof(int));
+    
+            var completeParameter = complete.HasValue ?
+                new ObjectParameter("complete", complete) :
+                new ObjectParameter("complete", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_CheckedAnswer", testidParameter, questionidParameter, answeridParameter, completeParameter);
+        }
     }
 }

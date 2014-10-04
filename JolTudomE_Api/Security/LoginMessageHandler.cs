@@ -72,8 +72,12 @@ namespace JolTudomE_Api.Security {
     }
 
     private IPrincipal GetPrincipal(LoggedInUser user) {
-      string token = SessionManager.NewSession(user.PersonID, user.RoleID).Session.Token;
-      var identity = new CustomIdentity(user.UserName, _AuthType, user.PersonID, user.RoleID, token);
+      var identity = new CustomIdentity(user.UserName,
+        _AuthType,
+        user.PersonID,
+        user.RoleID,
+        user.Token,
+        user.FullName);
 
       return new CustomPrincipal(identity);
     }
@@ -82,10 +86,13 @@ namespace JolTudomE_Api.Security {
       using (JolTudomEEntities db = new JolTudomEEntities()) {
         usp_Authenticate_Result result = db.usp_Authenticate(username, password).FirstOrDefault();
         if (result != null) {
+          var session = SessionManager.NewSession(result.PersonID, result.RoleID).Session;
           return new LoggedInUser {
             UserName = username,
             PersonID = result.PersonID,
             RoleID = result.RoleID,
+            Token = session.Token,
+            FullName = string.Format("{0} {1}", session.Person.FirstName, session.Person.LastName)
           };
         }
         else

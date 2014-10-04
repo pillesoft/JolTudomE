@@ -7,27 +7,15 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using Phone1.Resources;
 
-namespace Phone1 {
-  public partial class DetailsPage : PhoneApplicationPage {
+namespace Phone1.View {
+  public partial class LoginView : PhoneApplicationPage {
     // Constructor
-    public DetailsPage() {
+    public LoginView() {
       InitializeComponent();
 
       // Sample code to localize the ApplicationBar
       //BuildLocalizedApplicationBar();
-    }
-
-    // When page is navigated to set data context to selected item in list
-    protected override void OnNavigatedTo(NavigationEventArgs e) {
-      if (DataContext == null) {
-        string selectedIndex = "";
-        if (NavigationContext.QueryString.TryGetValue("selectedItem", out selectedIndex)) {
-          int index = int.Parse(selectedIndex);
-          DataContext = App.ViewModel.Items[index];
-        }
-      }
     }
 
     // Sample code for building a localized ApplicationBar

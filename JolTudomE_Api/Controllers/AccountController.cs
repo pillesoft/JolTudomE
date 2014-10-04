@@ -1,4 +1,5 @@
-﻿using JolTudomE_Api.Security;
+﻿using JolTudomE_Api.Models;
+using JolTudomE_Api.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,11 @@ namespace JolTudomE_Api.Controllers {
 
     [Route("login")]
     [AllowAnonymous]
-    public IHttpActionResult Login() {
-      return Ok();
+    public LoggedInUser Login() {
+      var id = (CustomIdentity)User.Identity;
+
+      return new LoggedInUser { PersonID = id.PersonID, RoleID = id.RoleID, UserName = id.Name, FullName = id.FullName };
     }
 
-    [Route("Valami")]
-    [HttpGet]
-    public string ValamiMas() {
-      return "hello";
-    }
   }
 }
