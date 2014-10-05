@@ -325,5 +325,29 @@ namespace JolTudomE_WP {
 
     }
 
+    public async void CancelTest(int testid, int personid) {
+      string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/cancel", testid, personid);
+
+      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
+      request.Method = "GET";
+      request.Accept = "application/json";
+
+      Cookie c = new Cookie("JolTudomEToken", Token);
+      request.CookieContainer = new CookieContainer();
+      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
+
+      try {
+        WebResponse response = await request.GetResponseAsync();
+        HttpWebResponse httpresp = (HttpWebResponse)response;
+
+        if (httpresp.StatusCode == HttpStatusCode.OK) {
+          response.Dispose();
+        }
+      }
+      catch (WebException) {
+      }
+
+    }
+
   }
 }

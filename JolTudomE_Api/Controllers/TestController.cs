@@ -131,7 +131,7 @@ namespace JolTudomE_Api.Controllers {
     public IHttpActionResult CheckTest(int testid, int questionid, int answerid) {
       var id = (CustomIdentity)User.Identity;
 
-      var details = DBContext.usp_CheckedAnswer(testid, questionid, answerid, false);
+      DBContext.usp_CheckedAnswer(testid, questionid, answerid, false);
       UpdateSession();
 
       return Ok();
@@ -142,7 +142,18 @@ namespace JolTudomE_Api.Controllers {
     public IHttpActionResult CompleteTest(int testid, int questionid, int answerid) {
       var id = (CustomIdentity)User.Identity;
 
-      var details = DBContext.usp_CheckedAnswer(testid, questionid, answerid, true);
+      DBContext.usp_CheckedAnswer(testid, questionid, answerid, true);
+      UpdateSession();
+
+      return Ok();
+    }
+
+    [Route("cancel/{testid}")]
+    [HttpGet]
+    public IHttpActionResult Cancel(int testid, int personid) {
+      var id = (CustomIdentity)User.Identity;
+
+      DBContext.usp_CancelTest(testid, personid);
       UpdateSession();
 
       return Ok();

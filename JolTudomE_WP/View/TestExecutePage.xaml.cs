@@ -108,6 +108,11 @@ namespace JolTudomE_WP.View {
     }
 
     private void cmdCancel_Click(object sender, RoutedEventArgs e) {
+      WebAPIManager wm = ((App)App.Current).WAPIM;
+      TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
+      wm.CancelTest(vm.NewTest.TestID, wm.LoggedInUser.PersonID);
+
+      Frame.GoBack();
 
     }
   }

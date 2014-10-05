@@ -298,8 +298,7 @@
 							</StackPanel>
 						</Grid>
 						<StackPanel Grid.Row="1">
-							<TextBlock Text="Kurzus:" FontSize="18.667"/>
-							<ComboBox ItemsSource="{Binding CourseList}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}"
+							<ComboBox Header="Kurzus:" ItemsSource="{Binding CourseList}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}"
 								HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,10,0,0">
 								<ComboBox.ItemTemplate>
 									<DataTemplate>
@@ -312,8 +311,7 @@
 							</ComboBox>
 						</StackPanel>
 						<StackPanel Grid.Row="2">
-							<TextBlock Text="Témakör:" FontSize="18.667"/>
-							<ListView x:Name="lvTopic" ItemsSource="{Binding TopicList}" SelectionMode="Multiple" ItemTemplate="{StaticResource TopicListDataTemplate}"
+              <ListView x:Name="lvTopic" Header="Témakör:" ItemsSource="{Binding TopicList}" SelectionMode="Multiple" ItemTemplate="{StaticResource TopicListDataTemplate}"
 								ItemContainerStyle="{StaticResource ListViewItemStyle}"
 								HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="200" Margin="0,10,0,0" SelectionChanged="lvTopic_SelectionChanged" />
             </StackPanel>
@@ -327,13 +325,9 @@
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
-					<TextBlock Text="Név" />
-					<TextBox Text="{Binding FullName, Mode=TwoWay}" Grid.Row="1" />
-					<TextBlock Text="Felhasználó név" Grid.Row="2" />
-					<TextBox Text="{Binding UserName, Mode=TwoWay}" Grid.Row="3" />
+					<TextBox Header="Név" Text="{Binding FullName, Mode=TwoWay}" Grid.Row="0" />
+          <TextBox Header="Felhasználó név" Text="{Binding UserName, Mode=TwoWay}" Grid.Row="1" />
 				</Grid>
 			</PivotItem>
 		</Pivot>
