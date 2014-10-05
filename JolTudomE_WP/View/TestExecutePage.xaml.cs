@@ -98,21 +98,26 @@ namespace JolTudomE_WP.View {
 
     #endregion
 
-    private void cmdStop_Click(object sender, RoutedEventArgs e) {
+    private async void cmdStop_Click(object sender, RoutedEventArgs e) {
       WebAPIManager wm = ((App)App.Current).WAPIM;
       TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
       int answerid = vm.CheckedAnswer == 0 ? 0 : vm.CurrentQuestion.Answers[vm.CheckedAnswer - 1].AnswerID;
-      wm.CompleteTest(vm.NewTest.TestID, vm.CurrentQuestion.QuestionID, answerid);
+      await wm.CompleteTest(vm.NewTest.TestID, vm.CurrentQuestion.QuestionID, answerid);
 
       Frame.GoBack();
     }
 
-    private void cmdCancel_Click(object sender, RoutedEventArgs e) {
-      WebAPIManager wm = ((App)App.Current).WAPIM;
-      TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
-      wm.CancelTest(vm.NewTest.TestID, wm.LoggedInUser.PersonID);
+    private async void cmdCancel_Click(object sender, RoutedEventArgs e) {
 
-      Frame.GoBack();
+      ContentDialog TestCancelDialog = new TestCancelDialog();
+      ContentDialogResult result = await TestCancelDialog.ShowAsync();
+      if (result == ContentDialogResult.Secondary) {
+        WebAPIManager wm = ((App)App.Current).WAPIM;
+        TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
+        await wm.CancelTest(vm.NewTest.TestID, wm.LoggedInUser.PersonID);
+
+        Frame.GoBack();
+      }
 
     }
   }

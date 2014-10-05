@@ -115,8 +115,8 @@
       <DependentUpon>SectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="View\MessageDialog.xaml.cs">
-      <DependentUpon>MessageDialog.xaml</DependentUpon>
+    <Compile Include="View\TestCancelDialog.xaml.cs">
+      <DependentUpon>TestCancelDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TestDetailPage.xaml.cs">
       <DependentUpon>TestDetailPage.xaml</DependentUpon>
@@ -174,7 +174,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MessageDialog.xaml">
+    <Page Include="View\TestCancelDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

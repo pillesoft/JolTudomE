@@ -301,7 +301,7 @@ namespace JolTudomE_WP {
 
     }
 
-    public async void CompleteTest(int testid, int questionid, int answerid) {
+    public async Task<bool> CompleteTest(int testid, int questionid, int answerid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/complete", testid, questionid, answerid);
 
       HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
@@ -318,14 +318,17 @@ namespace JolTudomE_WP {
 
         if (httpresp.StatusCode == HttpStatusCode.OK) {
           response.Dispose();
+          return true;
         }
+        return false;
       }
       catch (WebException) {
+        return false;
       }
 
     }
 
-    public async void CancelTest(int testid, int personid) {
+    public async Task<bool> CancelTest(int testid, int personid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/cancel", testid, personid);
 
       HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
@@ -342,9 +345,12 @@ namespace JolTudomE_WP {
 
         if (httpresp.StatusCode == HttpStatusCode.OK) {
           response.Dispose();
+          return true;
         }
+        return false;
       }
       catch (WebException) {
+        return false;
       }
 
     }

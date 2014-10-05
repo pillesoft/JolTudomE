@@ -17,15 +17,10 @@ using Windows.UI.Xaml.Navigation;
 // The Content Dialog item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
 namespace JolTudomE_WP.View {
-  public sealed partial class MessageDialog : ContentDialog {
-    public MessageDialog() {
+  public sealed partial class TestCancelDialog : ContentDialog {
+    public TestCancelDialog() {
       this.InitializeComponent();
     }
 
-    private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args) {
-    }
-
-    private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args) {
-    }
   }
 }
