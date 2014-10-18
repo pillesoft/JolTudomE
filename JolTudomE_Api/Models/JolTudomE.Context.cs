@@ -208,5 +208,18 @@ namespace JolTudomE_Api.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_CheckedAnswer", testidParameter, questionidParameter, answeridParameter, completeParameter);
         }
+    
+        public virtual ObjectResult<usp_GetAllUsers_Result> usp_GetAllUsers(Nullable<int> roleid, Nullable<int> sroleid)
+        {
+            var roleidParameter = roleid.HasValue ?
+                new ObjectParameter("roleid", roleid) :
+                new ObjectParameter("roleid", typeof(int));
+    
+            var sroleidParameter = sroleid.HasValue ?
+                new ObjectParameter("sroleid", sroleid) :
+                new ObjectParameter("sroleid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_GetAllUsers_Result>("usp_GetAllUsers", roleidParameter, sroleidParameter);
+        }
     }
 }

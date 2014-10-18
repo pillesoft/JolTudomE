@@ -1,4 +1,5 @@
 ﻿using JolTudomE_WP.Common;
+using JolTudomE_WP.Model;
 using JolTudomE_WP.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -52,11 +53,10 @@ namespace JolTudomE_WP.View {
     /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
     /// a dictionary of state preserved by this page during an earlier
     /// session.  The state will be null the first time a page is visited.</param>
-    private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
-      WebAPIManager wm = ((App)App.Current).WAPIM;
+    private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
 
-      var result = await wm.GetTestDetails((int)e.NavigationParameter, wm.LoggedInUser.PersonID);
-      ((TestDetailViewModel)this.DataContext).TestDetList = result;
+      IViewModel vm = this.DataContext as IViewModel;
+      vm.LoadData(new TestDetailParam { TestID = (int)e.NavigationParameter, PersonID = DataSource.LoggedInInfo.PersonID });
     }
 
     /// <summary>

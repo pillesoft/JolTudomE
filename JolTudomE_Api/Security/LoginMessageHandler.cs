@@ -18,6 +18,8 @@ namespace JolTudomE_Api.Security {
   public class LoginMessageHandler : DelegatingHandler {
     private const string _AuthType = "basic";
     private const string _TokenName = "JolTudomEToken";
+    private string _Token;
+    private string _UserName;
 
     protected override async System.Threading.Tasks.Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) {
 
@@ -38,7 +40,7 @@ namespace JolTudomE_Api.Security {
         var response = await base.SendAsync(request, cancellationToken);
 
         // add token cookie value
-        IEnumerable<CookieHeaderValue> ccoll = new CookieHeaderValue[] { new CookieHeaderValue(_TokenName, ((CustomIdentity)HttpContext.Current.User.Identity).Token) };
+        IEnumerable<CookieHeaderValue> ccoll = new CookieHeaderValue[] { new CookieHeaderValue(_TokenName, _Token) };
         response.Headers.AddCookies(ccoll);
         
         return response.StatusCode == HttpStatusCode.Unauthorized ? CreateUnauthorizedResponse() : response;
@@ -71,28 +73,26 @@ namespace JolTudomE_Api.Security {
       return true;
     }
 
-    private IPrincipal GetPrincipal(LoggedInUser user) {
-      var identity = new CustomIdentity(user.UserName,
+    private IPrincipal GetPrincipal(LoginResponse user) {
+      var identity = new CustomIdentity(_UserName,
         _AuthType,
         user.PersonID,
         user.RoleID,
-        user.Token,
-        user.FullName);
+        _Token);
 
       return new CustomPrincipal(identity);
     }
 
-    private LoggedInUser ValidateUser(string username, string password) {
+    private LoginResponse ValidateUser(string username, string password) {
       using (JolTudomEEntities db = new JolTudomEEntities()) {
         usp_Authenticate_Result result = db.usp_Authenticate(username, password).FirstOrDefault();
         if (result != null) {
           var session = SessionManager.NewSession(result.PersonID, result.RoleID).Session;
-          return new LoggedInUser {
-            UserName = username,
+          _Token = session.Token;
+          _UserName = session.Person.UserName;
+          return new LoginResponse {
             PersonID = result.PersonID,
-            RoleID = result.RoleID,
-            Token = session.Token,
-            FullName = string.Format("{0} {1}", session.Person.FirstName, session.Person.LastName)
+            RoleID = result.RoleID
           };
         }
         else

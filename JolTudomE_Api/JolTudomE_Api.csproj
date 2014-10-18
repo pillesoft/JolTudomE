@@ -111,18 +111,23 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JolTudomE.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\LoggedInUser.cs" />
+    <Compile Include="Models\LoginResponse.cs" />
     <Compile Include="Models\NewTest.cs" />
     <Compile Include="Models\Person.cs">
       <DependentUpon>JolTudomE.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PersonRole.cs" />
     <Compile Include="Models\Sessions.cs">
       <DependentUpon>JolTudomE.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserDetail.cs" />
     <Compile Include="Models\usp_Authenticate_Result.cs">
       <DependentUpon>JolTudomE.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\usp_Eval_Result.cs">
+      <DependentUpon>JolTudomE.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\usp_GetAllUsers_Result.cs">
       <DependentUpon>JolTudomE.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\usp_GetCourses_Result.cs">

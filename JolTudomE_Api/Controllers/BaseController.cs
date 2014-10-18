@@ -14,7 +14,10 @@ namespace JolTudomE_Api.Controllers {
 
     public BaseController() {
       DBContext = new JolTudomEEntities();
-      SM = new SessionManager(((CustomIdentity)User.Identity).Token);
+      CustomIdentity id = User.Identity as CustomIdentity;
+      if (id != null) {
+        SM = new SessionManager(id.Token);
+      }
     }
 
     protected void UpdateSession() {

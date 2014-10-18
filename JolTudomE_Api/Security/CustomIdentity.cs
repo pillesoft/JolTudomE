@@ -12,15 +12,13 @@ namespace JolTudomE_Api.Security {
     public int PersonID { get; private set; }
     public int RoleID { get; private set; }
     public string Token { get; private set; }
-    public string FullName { get; private set; }
 
-    public CustomIdentity(string username, string type, int personid, int roleid, string token, string fullname) {
+    public CustomIdentity(string username, string type, int personid, int roleid, string token) {
       _Name = username;
       _AuthType = type;
       PersonID = personid;
       RoleID = roleid;
       Token = token;
-      FullName = fullname; 
     }
 
     public string AuthenticationType {

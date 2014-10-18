@@ -81,6 +81,10 @@
           <Parameter Name="username" Type="varchar" Mode="In" />
           <Parameter Name="password" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="usp_GetAllUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="users">
+          <Parameter Name="roleid" Type="int" Mode="In" />
+          <Parameter Name="sroleid" Type="int" Mode="In" />
+        </Function>
         <Function Name="usp_SearchUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="users">
           <Parameter Name="roleid" Type="int" Mode="In" />
           <Parameter Name="prefix" Type="varchar" Mode="In" />
@@ -137,11 +141,6 @@
           <FunctionImport Name="usp_GetTopics" ReturnType="Collection(JolTudomEModel.usp_GetTopics_Result)">
           <Parameter Name="courseid" Mode="In" Type="Int32" />
           </FunctionImport>
-          <EntitySet Name="Person" EntityType="JolTudomEModel.Person" />
-          <AssociationSet Name="FK_Sessions_Person" Association="JolTudomEModel.FK_Sessions_Person">
-            <End Role="Person" EntitySet="Person" />
-            <End Role="Sessions" EntitySet="Sessions" />
-          </AssociationSet>
           <FunctionImport Name="usp_Statistics" ReturnType="Collection(JolTudomEModel.usp_Statistics_Result)">
             <Parameter Name="person" Mode="In" Type="Int32" />
             <Parameter Name="callerid" Mode="In" Type="Int32" />
@@ -162,6 +161,15 @@
             <Parameter Name="questionid" Mode="In" Type="Int32" />
             <Parameter Name="answerid" Mode="In" Type="Int32" />
             <Parameter Name="complete" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <EntitySet Name="Person" EntityType="JolTudomEModel.Person" />
+          <AssociationSet Name="FK_Sessions_Person" Association="JolTudomEModel.FK_Sessions_Person">
+            <End Role="Person" EntitySet="Person" />
+            <End Role="Sessions" EntitySet="Sessions" />
+          </AssociationSet>
+          <FunctionImport Name="usp_GetAllUsers" ReturnType="Collection(JolTudomEModel.usp_GetAllUsers_Result)">
+            <Parameter Name="roleid" Mode="In" Type="Int32" />
+            <Parameter Name="sroleid" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="usp_Authenticate_Result">
@@ -201,6 +209,19 @@
           <Property Type="String" Name="TopicName" Nullable="false" MaxLength="50" />
           <Property Type="String" Name="TopicDescription" Nullable="true" MaxLength="255" />
         </ComplexType>
+        <ComplexType Name="usp_Statistics_Result">
+          <Property Type="Int32" Name="TestID" Nullable="false" />
+          <Property Type="DateTime" Name="Generated" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="Questions" Nullable="true" />
+          <Property Type="Int32" Name="CorrectAnswer" Nullable="false" />
+          <Property Type="Decimal" Name="Percent" Nullable="true" Precision="5" Scale="2" />
+          <Property Type="Time" Name="TotalTime" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_Eval_Result">
+          <Property Type="String" Name="QuestionText" Nullable="false" MaxLength="255" />
+          <Property Type="String" Name="ChekedAnswer" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="CorrectAnswer" Nullable="false" MaxLength="50" />
+        </ComplexType>
         <EntityType Name="Person">
           <Key>
             <PropertyRef Name="PersonID" />
@@ -228,18 +249,13 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <ComplexType Name="usp_Statistics_Result">
-          <Property Type="Int32" Name="TestID" Nullable="false" />
-          <Property Type="DateTime" Name="Generated" Nullable="false" Precision="23" />
-          <Property Type="Int32" Name="Questions" Nullable="true" />
-          <Property Type="Int32" Name="CorrectAnswer" Nullable="false" />
-          <Property Type="Decimal" Name="Percent" Nullable="true" Precision="5" Scale="2" />
-          <Property Type="Time" Name="TotalTime" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="usp_Eval_Result">
-          <Property Type="String" Name="QuestionText" Nullable="false" MaxLength="255" />
-          <Property Type="String" Name="ChekedAnswer" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="CorrectAnswer" Nullable="false" MaxLength="50" />
+        <ComplexType Name="usp_GetAllUsers_Result">
+          <Property Type="String" Name="Prefix" Nullable="true" MaxLength="5" />
+          <Property Type="String" Name="FirstName" Nullable="false" MaxLength="25" />
+          <Property Type="String" Name="MiddleName" Nullable="true" MaxLength="25" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="25" />
+          <Property Type="Int32" Name="PersonID" Nullable="false" />
+          <Property Type="Int32" Name="RoleID" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -303,21 +319,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="Person">
-            <EntityTypeMapping TypeName="JolTudomEModel.Person">
-              <MappingFragment StoreEntitySet="Person">
-                <ScalarProperty Name="UserGuid" ColumnName="UserGuid" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Created" ColumnName="Created" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Prefix" ColumnName="Prefix" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="PersonID" ColumnName="PersonID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="usp_Statistics" FunctionName="JolTudomEModel.Store.usp_Statistics">
             <ResultMapping>
               <ComplexTypeMapping TypeName="JolTudomEModel.usp_Statistics_Result">
@@ -341,6 +342,33 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="usp_CancelTest" FunctionName="JolTudomEModel.Store.usp_CancelTest" />
           <FunctionImportMapping FunctionImportName="usp_CheckedAnswer" FunctionName="JolTudomEModel.Store.usp_CheckedAnswer" />
+          <EntitySetMapping Name="Person">
+            <EntityTypeMapping TypeName="JolTudomEModel.Person">
+              <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="UserGuid" ColumnName="UserGuid" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="PersonID" ColumnName="PersonID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_GetAllUsers" FunctionName="JolTudomEModel.Store.usp_GetAllUsers">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="JolTudomEModel.usp_GetAllUsers_Result">
+                <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="PersonID" ColumnName="PersonID" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

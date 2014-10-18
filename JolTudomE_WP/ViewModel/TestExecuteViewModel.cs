@@ -1,16 +1,9 @@
 ﻿using JolTudomE_WP.Common;
 using JolTudomE_WP.Model;
-using JolTudomE_WP.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JolTudomE_WP.ViewModel {
-  public class TestExecuteViewModel : BaseNotifyable {
-
-    private WebAPIManager _WM;
+  public class TestExecuteViewModel : BaseNotifyable, IViewModel {
 
     private IEnumerator<NewTestQuestion> _TestQuestions;
 
@@ -63,8 +56,8 @@ namespace JolTudomE_WP.ViewModel {
       get {
         return _NextQuestionCommand
       ?? (_NextQuestionCommand = new RelayCommand(
-      () => {
-        _WM.AnswerTest(NewTest.TestID, CurrentQuestion.QuestionID, CurrentQuestion.Answers[CheckedAnswer - 1].AnswerID);
+      async () => {
+        await DataSource.AnswerTest(NewTest.TestID, CurrentQuestion.QuestionID, CurrentQuestion.Answers[CheckedAnswer - 1].AnswerID);
         _TestQuestions.MoveNext();
         ShowNewQuestion();
       },
@@ -74,11 +67,11 @@ namespace JolTudomE_WP.ViewModel {
 
 
     public TestExecuteViewModel() {
-
-      _WM = ((App)App.Current).WAPIM;
-
+      
+      /* DESIGN TIME DATA
       TestQuestion = "1./15. Ez az elso kerdes";
       Answers = new string[] { "Válasz 1", "Válasz 2", "Válasz 3", "Válasz 4" };
+      */
 
       CheckedAnswer = 3;
     }
@@ -100,6 +93,14 @@ namespace JolTudomE_WP.ViewModel {
 
       CheckedAnswer = 0;
       NextQuestionCommand.RaiseCanExecuteChanged();
+    }
+
+    public async void LoadData(object customdata) {
+      NewTestParam p = (NewTestParam)customdata;
+
+      var result = await DataSource.GenerateTest(DataSource.LoggedInInfo.PersonID, p.NumberOfQuestions, p.TopicIDs);
+      NewTest = result;
+
     }
   }
 }

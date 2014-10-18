@@ -1,20 +1,9 @@
 ﻿using JolTudomE_WP.Common;
 using JolTudomE_WP.View;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
@@ -26,8 +15,6 @@ namespace JolTudomE_WP {
   /// </summary>
   public sealed partial class App : Application {
     private TransitionCollection transitions;
-
-    public WebAPIManager WAPIM { get; private set; }
 
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
@@ -89,17 +76,17 @@ namespace JolTudomE_WP {
           }
         }
 
-        WAPIM = new WebAPIManager();
-
         rootFrame.ContentTransitions = null;
         rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
         // When the navigation stack isn't restored navigate to the first page,
         // configuring the new page by passing required information as a navigation
         // parameter.
-        if (!rootFrame.Navigate(typeof(MainPage), e.Arguments)) {
-          throw new Exception("Failed to create initial page");
-        }
+        rootFrame.Navigate(typeof(LoginPage));
+
+        //if (!rootFrame.Navigate(typeof(MainPage), e.Arguments)) {
+        //  throw new Exception("Failed to create initial page");
+        //}
       }
 
       // Ensure the current window is active.

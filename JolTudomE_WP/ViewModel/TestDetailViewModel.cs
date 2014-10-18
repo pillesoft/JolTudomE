@@ -1,5 +1,4 @@
 ﻿using JolTudomE_WP.Model;
-using JolTudomE_WP.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP.ViewModel {
-  public class TestDetailViewModel : BaseNotifyable {
+  public class TestDetailViewModel : BaseNotifyable, IViewModel {
 
     private List<TestDetail> _TestDetList;
 
@@ -32,6 +31,14 @@ namespace JolTudomE_WP.ViewModel {
       TestDetList.Add(td1);
         
       
+    }
+
+    public async void LoadData(object customdata) {
+      var param = customdata as TestDetailParam;
+
+      var result = await DataSource.GetTestDetail(param.TestID, param.PersonID);
+      TestDetList = result;
+
     }
   }
 }

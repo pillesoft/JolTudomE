@@ -88,33 +88,43 @@
     <Compile Include="Common\RelayCommandT.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="DataModel\SampleDataSource.cs" />
+    <Compile Include="Common\TestExecutionNavigationHelper.cs" />
+    <Compile Include="DataSource.cs" />
     <Compile Include="Helper\BoolToTestDetImageSourceConverter.cs" />
+    <Compile Include="Helper\BoolToNegateConverter.cs" />
+    <Compile Include="Helper\BoolToVisibilityConverter.cs" />
+    <Compile Include="Helper\ErrorMessageToVisibilityConverter.cs" />
+    <Compile Include="Helper\ExceptionHandler.cs" />
     <Compile Include="Helper\IsCheckedToIntConverter.cs" />
-    <Compile Include="HubPage.xaml.cs">
-      <DependentUpon>HubPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ItemPage.xaml.cs">
-      <DependentUpon>ItemPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Model\BaseEditable.cs" />
     <Compile Include="Model\Course.cs" />
+    <Compile Include="Model\LoginResponse.cs" />
     <Compile Include="Model\NewTestClasses.cs" />
     <Compile Include="Model\NewTestParam.cs" />
+    <Compile Include="Model\PersonRole.cs" />
+    <Compile Include="Model\SPError.cs" />
+    <Compile Include="Model\TestDetailParam.cs" />
     <Compile Include="Model\Topic.cs" />
+    <Compile Include="Model\UserDetail.cs" />
+    <Compile Include="ViewModel\IViewModel.cs" />
+    <Compile Include="ViewModel\ProfilViewModel.cs" />
+    <Compile Include="ViewModel\RegisterViewModel.cs" />
     <Compile Include="ViewModel\TestExecuteViewModel.cs" />
     <Compile Include="ViewModel\TestDetailViewModel.cs" />
+    <Compile Include="View\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\BaseNotifyable.cs" />
-    <Compile Include="Model\LoggedInUser.cs" />
     <Compile Include="Model\Statistic.cs" />
     <Compile Include="Model\TestDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SectionPage.xaml.cs">
-      <DependentUpon>SectionPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="View\RegisterPage.xaml.cs">
+      <DependentUpon>RegisterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\TestCancelDialog.xaml.cs">
       <DependentUpon>TestCancelDialog.xaml</DependentUpon>
     </Compile>
@@ -154,15 +164,10 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataModel\SampleData.json" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="HubPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ItemPage.xaml">
+    <Page Include="View\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -170,7 +175,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SectionPage.xaml">
+    <Page Include="View\RegisterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

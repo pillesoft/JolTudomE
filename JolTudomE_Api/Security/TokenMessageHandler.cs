@@ -18,6 +18,8 @@ namespace JolTudomE_Api.Security {
   public class TokenMessageHandler : DelegatingHandler {
     private const string _AuthType = "token";
     private const string _CookieName = "JolTudomEToken";
+    private string _Token;
+    private string _UserName;
 
     protected override async System.Threading.Tasks.Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) {
 
@@ -61,20 +63,19 @@ namespace JolTudomE_Api.Security {
       return true;
     }
 
-    private IPrincipal GetPrincipal(LoggedInUser user) {
-      var identity = new CustomIdentity(user.UserName, _AuthType, user.PersonID, user.RoleID, user.Token, user.FullName);
+    private IPrincipal GetPrincipal(LoginResponse user) {
+      var identity = new CustomIdentity(_UserName, _AuthType, user.PersonID, user.RoleID, _Token);
       return new CustomPrincipal(identity);
     }
 
-    private LoggedInUser ValidateToken(string token) {
+    private LoginResponse ValidateToken(string token) {
       try {
         SessionManager sm = new SessionManager(token);
-        return new LoggedInUser {
-          UserName = sm.Session.Person.UserName,
+        _Token = token;
+        _UserName = sm.Session.Person.UserName;
+        return new LoginResponse {
           PersonID = sm.Session.PersonID,
-          RoleID = sm.Session.RoleID,
-          Token = token,
-          FullName = string.Format("{0} {1}", sm.Session.Person.FirstName, sm.Session.Person.LastName)
+          RoleID = sm.Session.RoleID
         };
       }
       catch (SessionNotAvailable) {

@@ -1,38 +1,52 @@
-﻿using JolTudomE_WP.Common;
-using JolTudomE_WP.Model;
-using JolTudomE_WP.Models;
+﻿using JolTudomE_WP.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JolTudomE_WP.ViewModel {
-  public class MainViewModel : BaseNotifyable {
+  public class MainViewModel : BaseNotifyable, IViewModel {
 
-    private WebAPIManager _WM;
+    private bool _ShowProgressBar;
+
+    public bool ShowProgressBar {
+      get { return _ShowProgressBar; }
+      set { SetProperty<bool>(ref _ShowProgressBar, value); }
+    }
+
 
     private int _CurrentPivotItem;
     public int CurrentPivotItem {
       get { return _CurrentPivotItem; }
       set {
         SetProperty<int>(ref _CurrentPivotItem, value);
+        IsProfilButtonsShown = _CurrentPivotItem == 2;
       }
     }
 
-    private LoggedInUser _User;
-    public LoggedInUser User {
-      get { return _User; }
+    private ProfilViewModel _ProfilVM;
+
+    ProfilViewModel ProfilVM {
+      get { return _ProfilVM; }
       set {
-        SetProperty<LoggedInUser>(ref _User, value);
+        SetProperty<ProfilViewModel>(ref _ProfilVM, value);  
       }
     }
 
     private List<Statistic> _StatisticList;
     public List<Statistic> StatisticList {
       get { return _StatisticList; }
-      set { SetProperty<List<Statistic>>(ref _StatisticList, value); }
+      set {
+        SetProperty<List<Statistic>>(ref _StatisticList, value);
+        IsStatisticEmpty = _StatisticList.Count == 0;
+      }
+    }
+
+    private bool _IsStatisticEmpty;
+
+    public bool IsStatisticEmpty {
+      get { return _IsStatisticEmpty; }
+      set { SetProperty<bool>(ref _IsStatisticEmpty, value); }
     }
 
     private ObservableCollection<Course> _CourseList;
@@ -74,13 +88,25 @@ namespace JolTudomE_WP.ViewModel {
       set { _SelectedTopics = value; }
     }
 
+    private bool _IsTopicErrorShown;
+    public bool IsTopicErrorShown {
+      get { return _IsTopicErrorShown; }
+      set { SetProperty<bool>(ref _IsTopicErrorShown, value); }
+    }
+
+    private bool _IsProfilButtonsShown;
+    public bool IsProfilButtonsShown {
+      get { return _IsProfilButtonsShown; }
+      set { SetProperty<bool>(ref _IsProfilButtonsShown, value); }
+    }
 
     public MainViewModel() {
 
-      _WM = ((App)App.Current).WAPIM;
       NumberQuestion = 15;
+      IsTopicErrorShown = false;
+      ProfilVM = new ProfilViewModel();
 
-      // design time data
+      /* DESIGN TIME DATA
       Statistic st = new Statistic {
         CorrectAnswer = 12,
         Generated = DateTime.Now,
@@ -108,13 +134,25 @@ namespace JolTudomE_WP.ViewModel {
       TopicList.Add(new Topic { TopicID = 2, TopicName = "topic name 2", TopicDescription = "topic 2 description" });
       TopicList.Add(new Topic { TopicID = 1, TopicName = "topic name 1", TopicDescription = "topic 1 description" });
       TopicList.Add(new Topic { TopicID = 2, TopicName = "topic name 2", TopicDescription = "topic 2 description" });
-
+      */
     }
 
     private async void GetTopicList() {
-      TopicList = await _WM.GetTopics(_SelectedCourse.CourseID);
+      TopicList = await DataSource.GetTopics(_SelectedCourse.CourseID);
+      SelectedTopics = new List<int>();
+      IsTopicErrorShown = false;
     }
 
 
+    public async void LoadData(object customdata) {
+      ShowProgressBar = true;
+      
+      ProfilVM.LoadData(null);
+
+      StatisticList = await DataSource.GetStatistic((int)customdata);
+      CourseList = await DataSource.GetCourses();
+
+      ShowProgressBar = false;
+    }
   }
 }

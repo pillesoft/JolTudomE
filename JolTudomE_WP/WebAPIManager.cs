@@ -1,27 +1,80 @@
-﻿using JolTudomE_WP.Model;
-using JolTudomE_WP.Models;
+﻿using JolTudomE_WP.Helper;
+using JolTudomE_WP.Model;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP {
-  public class WebAPIManager {
-    public string Token { get; private set; }
-    public LoggedInUser LoggedInUser { get; private set; }
+
+  class UnauthorizedException : Exception { }
+  
+  class ApiModelException : Exception {
+    public ApiModelException(string apierror) : base(apierror) { }
+  }
+
+  class ApiModelError : Dictionary<string, List<string>> {
+    public string FormattedError {
+      get {
+        StringBuilder err = new StringBuilder();
+        foreach (var item in this) {
+          err.AppendLine(string.Format("Field Name: {0}", item.Key));
+          foreach (var value in item.Value) {
+            err.AppendLine(string.Format("--->{0}", value));
+          }
+        }
+        return err.ToString();
+      }
+    }
+  }
+
+  class WebAPIManager {
+    private string _Token;
 
     private const string WEBAPIROOT = "http://localhost:1854";
 
-    public bool IsAuthenticated() {
-      return !string.IsNullOrEmpty(Token);
+    private string GetResponse(HttpWebResponse webresp) {
+      using (Stream dataStream = webresp.GetResponseStream()) {
+        using (StreamReader reader = new StreamReader(dataStream)) {
+          string responseFromServer = reader.ReadToEnd();
+          return responseFromServer;
+        }
+      }
     }
 
-    public async Task<bool> Login(string username, string password) {
+    private async Task<string> DoRequest(string url) {
+      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+      request.Method = "GET";
+      request.Accept = "application/json";
+
+      Cookie c = new Cookie("JolTudomEToken", _Token);
+      request.CookieContainer = new CookieContainer();
+      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
+
+      string responseFromServer = string.Empty;
+
+      try {
+        WebResponse response = await request.GetResponseAsync();
+        HttpWebResponse httpresp = (HttpWebResponse)response;
+
+        if (httpresp.StatusCode == HttpStatusCode.OK) {
+          responseFromServer = GetResponse(httpresp);
+        }
+        return responseFromServer;
+      }
+      catch (WebException wexc) {
+        _Token = string.Empty;
+        if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+        else throw;
+      }
+
+    }
+
+    internal async Task<string> Login(string username, string password) {
       string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/login");
       HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
 
@@ -30,327 +83,191 @@ namespace JolTudomE_WP {
       basicauth = Convert.ToBase64String(Encoding.UTF8.GetBytes(basicauth));
       request.Headers["Authorization"] = "Basic " + basicauth;
 
-      //// Create POST data and convert it to a byte array.
-      //string postData = "This is a test that posts this string to a Web server.";
-      //byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-      //// Set the ContentType property of the WebRequest.
-      //request.ContentType = "application/x-www-form-urlencoded";
-      //// Set the ContentLength property of the WebRequest.
-      //request.ContentLength = byteArray.Length;
-      //// Get the request stream.
-      //Stream dataStream = await request.GetRequestStreamAsync();
-      //// Write the data to the request stream.
-      //dataStream.Write(byteArray, 0, byteArray.Length);
-      //// Close the Stream object.
-      //dataStream.Close();
-
-      // Get the response.
       try {
         WebResponse response = await request.GetResponseAsync();
         HttpWebResponse httpresp = (HttpWebResponse)response;
+        string responseFromServer = string.Empty;
 
         if (httpresp.StatusCode == HttpStatusCode.OK) {
           string cookie = httpresp.Headers["Set-Cookie"];
-          Token = cookie.Split('=')[1];
+          _Token = cookie.Split('=')[1];
 
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-
-          LoggedInUser = JsonConvert.DeserializeObject<LoggedInUser>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
+          responseFromServer = GetResponse(httpresp);
           response.Dispose();
 
-          return true;
         }
         else {
-          Token = string.Empty;
-          LoggedInUser = null;
-          return false;
+          _Token = string.Empty;
         }
+
+        return responseFromServer;
       }
-      catch (WebException) {
-        Token = string.Empty;
-        LoggedInUser = null;
-        return false;
+      catch (WebException wexc) {
+        _Token = string.Empty;
+        if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+        else throw;
       }
     }
 
-    public async Task<List<Statistic>> GetStatistics(int personid) {
+    internal async Task<bool> Register(UserDetail newuser) {
+      string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/addstudent");
+      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
+
+      request.Method = "POST";
+      request.ContentType = "application/json; charset=utf-8";
+      request.Accept = "application/json";
+
+      string postData = JsonConvert.SerializeObject(newuser);
+      byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+      Stream dataStream = await request.GetRequestStreamAsync();
+      dataStream.Write(byteArray, 0, byteArray.Length);
+      dataStream.Dispose();
+
+      // send it
+      try {
+        WebResponse response = await request.GetResponseAsync();
+        HttpWebResponse httpresp = (HttpWebResponse)response;
+        string responseFromServer = string.Empty;
+
+        if (httpresp.StatusCode == HttpStatusCode.Created) {
+          response.Dispose();
+        }
+
+        return true;
+      }
+      catch (WebException wexc) {
+        if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.BadRequest) {
+          string modelerrors = GetResponse((HttpWebResponse)wexc.Response);
+          var errdetails = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>>(modelerrors);
+          ApiModelError apierr = new ApiModelError();
+          foreach (var field in errdetails) {
+            var errlist = field.Value["_errors"].FindAll(e => e.ContainsKey("<ErrorMessage>k__BackingField"));
+            List<string> errmesslist = new List<string>();
+            foreach (var errdet in errlist) {
+              string errmsg = string.Empty;
+              if (errdet.TryGetValue("<ErrorMessage>k__BackingField", out errmsg)) errmesslist.Add(errmsg);
+            }
+            apierr.Add(field.Key, errmesslist);
+          }
+          throw new ApiModelException(apierr.FormattedError);
+        }
+        else if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.InternalServerError) {
+          string modelerrors = GetResponse((HttpWebResponse)wexc.Response);
+          var errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
+          throw new ApiModelException(ExceptionHandler.GetUserFriendlyErrorMessage(errdetails["ExceptionMessage"]));
+        }
+        else throw;
+      }
+
+    }
+
+    internal async Task<string> GetLoginDetail() {
+      string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/detail");
+      string response = string.Empty;
+      try {
+        response = await DoRequest(fullurl);
+      }
+      catch {
+        throw;
+      }
+      return response;
+    }
+
+    internal async Task<string> GetStatistics(int personid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/statistic", personid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
-      List<Statistic> result = new List<Statistic>();
-
+      string response = string.Empty;
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-          // Display the content.
-          result = JsonConvert.DeserializeObject<List<Statistic>>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
-          response.Dispose();
-        }
+        response = await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return result;
+      catch {
+        throw;
       }
-
-      return result;
+      return response;
     }
 
-    public async Task<List<TestDetail>> GetTestDetails(int testid, int personid) {
+    internal async Task<string> GetTestDetails(int testid, int personid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/detail", testid, personid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
-      List<TestDetail> result = new List<TestDetail>();
-
+      string response = string.Empty;
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-          // Display the content.
-          result = JsonConvert.DeserializeObject<List<TestDetail>>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
-          response.Dispose();
-        }
+        response = await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return result;
+      catch {
+        throw;
       }
-
-      return result;
+      return response;
     }
 
-    public async Task<ObservableCollection<Course>> GetCourses() {
+    internal async Task<string> GetCourses() {
       string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/course/courses");
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
-      ObservableCollection<Course> result = new ObservableCollection<Course>();
-
+      string response = string.Empty;
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-          // Display the content.
-          result = JsonConvert.DeserializeObject<ObservableCollection<Course>>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
-          response.Dispose();
-        }
+        response = await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return result;
+      catch {
+        throw;
       }
-
-      return result;
+      return response;
     }
 
-    public async Task<ObservableCollection<Topic>> GetTopics(int courseid) {
+    internal async Task<string> GetTopics(int courseid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/course/topic", courseid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
-      ObservableCollection<Topic> result = new ObservableCollection<Topic>();
-
+      string response = string.Empty;
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-          // Display the content.
-          result = JsonConvert.DeserializeObject<ObservableCollection<Topic>>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
-          response.Dispose();
-        }
+        response = await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return result;
+      catch {
+        throw;
       }
-
-      return result;
+      return response;
     }
 
-    public async Task<NewTest> StartNewTest(int personid, int count, List<int> topicids) {
-
+    internal async Task<string> StartNewTest(int personid, int count, List<int> topicids) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/start", personid, count, string.Join(",", topicids));
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
-      NewTest result = new NewTest();
-
+      string response = string.Empty;
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          Stream dataStream = httpresp.GetResponseStream();
-          // Open the stream using a StreamReader for easy access.
-          StreamReader reader = new StreamReader(dataStream);
-          // Read the content.
-          string responseFromServer = reader.ReadToEnd();
-          // Display the content.
-          result = JsonConvert.DeserializeObject<NewTest>(responseFromServer);
-
-          // Clean up the streams.
-          reader.Dispose();
-          dataStream.Dispose();
-          response.Dispose();
-        }
+        response = await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return result;
+      catch {
+        throw;
       }
-
-      return result;
+      return response;
     }
 
-    public async void AnswerTest(int testid, int questionid, int answerid) {
+    internal async Task AnswerTest(int testid, int questionid, int answerid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/answer", testid, questionid, answerid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          response.Dispose();
-        }
+        await DoRequest(fullurl);
       }
-      catch (WebException) {
+      catch {
+        throw;
       }
-
     }
 
-    public async Task<bool> CompleteTest(int testid, int questionid, int answerid) {
+    internal async Task CompleteTest(int testid, int questionid, int answerid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/complete", testid, questionid, answerid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          response.Dispose();
-          return true;
-        }
-        return false;
+        await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return false;
+      catch {
+        throw;
       }
-
     }
 
-    public async Task<bool> CancelTest(int testid, int personid) {
+    internal async Task CancelTest(int testid, int personid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/cancel", testid, personid);
 
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
-      request.Method = "GET";
-      request.Accept = "application/json";
-
-      Cookie c = new Cookie("JolTudomEToken", Token);
-      request.CookieContainer = new CookieContainer();
-      request.CookieContainer.Add(new Uri(WEBAPIROOT), c);
-
       try {
-        WebResponse response = await request.GetResponseAsync();
-        HttpWebResponse httpresp = (HttpWebResponse)response;
-
-        if (httpresp.StatusCode == HttpStatusCode.OK) {
-          response.Dispose();
-          return true;
-        }
-        return false;
+        await DoRequest(fullurl);
       }
-      catch (WebException) {
-        return false;
+      catch {
+        throw;
       }
 
     }

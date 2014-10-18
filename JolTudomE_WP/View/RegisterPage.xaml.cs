@@ -1,11 +1,20 @@
 ﻿using JolTudomE_WP.Common;
-using JolTudomE_WP.Model;
 using JolTudomE_WP.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -14,10 +23,10 @@ namespace JolTudomE_WP.View {
   /// <summary>
   /// An empty page that can be used on its own or navigated to within a Frame.
   /// </summary>
-  public sealed partial class MainPage : Page {
+  public sealed partial class RegisterPage : Page {
     private NavigationHelper navigationHelper;
 
-    public MainPage() {
+    public RegisterPage() {
       this.InitializeComponent();
 
       this.navigationHelper = new NavigationHelper(this);
@@ -44,15 +53,7 @@ namespace JolTudomE_WP.View {
     /// a dictionary of state preserved by this page during an earlier
     /// session.  The state will be null the first time a page is visited.</param>
     private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
-
-      // take out LoginPage from Backstack list
-      var login = Frame.BackStack.FirstOrDefault(b => b.SourcePageType.Name == "LoginPage");
-      if (login != null) {
-        Frame.BackStack.Remove(login);
-      }
-
-      ((IViewModel)this.DataContext).LoadData(DataSource.LoggedInInfo.PersonID);
-
+      ((IViewModel)DataContext).LoadData(DataSource.CreateUserStudent());
     }
 
     /// <summary>
@@ -91,30 +92,41 @@ namespace JolTudomE_WP.View {
 
     #endregion
 
-    private void lvStatistic_ItemClick(object sender, ItemClickEventArgs e) {
-      int testid = ((JolTudomE_WP.Model.Statistic)e.ClickedItem).TestID;
-      Frame.Navigate(typeof(TestDetailPage), testid);
+    private void cmdCancel_Click(object sender, RoutedEventArgs e) {
+      Frame.Navigate(typeof(LoginPage));
     }
 
-    private void cmdStartTest_Click(object sender, RoutedEventArgs e) {
-      MainViewModel vm = (MainViewModel)this.DataContext;
-      if (vm.SelectedTopics.Count > 0) {
-        Frame.Navigate(typeof(TestExecutePage), new NewTestParam { NumberOfQuestions = vm.NumberQuestion, TopicIDs = vm.SelectedTopics });
+    private async void cmdRegister_Click(object sender, RoutedEventArgs e) {
+      RegisterViewModel vm = DataContext as RegisterViewModel;
+      if (!vm.NewUser.IsValid) {
+        ShowDialog("Regisztrálási Hiba", "A beviteli mezők adatai hibásak!");
       }
       else {
-        vm.IsTopicErrorShown = true;
+        prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        try {
+          await DataSource.MakeRegister(vm.NewUser);
+          ShowDialog("Regisztráció", "A regisztráció sikerült!");
+          Frame.Navigate(typeof(LoginPage));
+        }
+        catch (ApiModelException mexc) {
+          prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          ShowDialog("Regisztrálási Hiba", mexc.Message);
+        }
+        catch (Exception exc) {
+          prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          ShowDialog("Regisztrálási Hiba", exc.Message);
+        }
       }
     }
 
-    private void lvTopic_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      MainViewModel vm = (MainViewModel)this.DataContext;
-      vm.SelectedTopics = new List<int>();
-      foreach(Topic t in lvTopic.SelectedItems) {
-        vm.SelectedTopics.Add(t.TopicID);
-      }
-      vm.IsTopicErrorShown = vm.SelectedTopics.Count == 0;
+    private async void ShowDialog(string title, string msg) {
+      ContentDialog errordialog = new ContentDialog() {
+        Title = title,
+        Content = msg,
+        PrimaryButtonText = "Ok"
+      };
+
+      await errordialog.ShowAsync();
     }
-
-
   }
 }
