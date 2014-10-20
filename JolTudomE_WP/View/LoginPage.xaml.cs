@@ -32,7 +32,7 @@ namespace JolTudomE_WP.View {
       this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
       this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-      txtUserName.Text = "Ivanka";
+      txtUserName.Text = "admin2";
       txtPassword.Password = "12345678";
 
     }
@@ -104,7 +104,13 @@ namespace JolTudomE_WP.View {
       prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
       try {
         bool loginres = await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password);
-        Frame.Navigate(typeof(MainPage));
+        if (DataSource.LoggedInInfo.RoleID == DataSource.GetRoleStudent().RoleID) {
+          DataSource.SelectedUserInfo = DataSource.LoggedInInfo;
+          Frame.Navigate(typeof(SelectedUserPage));
+        }
+        else {
+          Frame.Navigate(typeof(LoggedInUserPage));
+        }
       }
       catch (UnauthorizedException) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

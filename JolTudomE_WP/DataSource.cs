@@ -13,14 +13,16 @@ namespace JolTudomE_WP {
     private WebAPIManager _WAM;
     private ObservableCollection<PersonRole> _Roles;
     private LoginResponse _LoggedInInfo;
+    private LoginResponse _SelectedUserInfo;
 
     public DataSource() {
       _WAM = new WebAPIManager();
 
       _Roles = new ObservableCollection<PersonRole>();
-      _Roles.Add(new PersonRole { RoleID = 1, Role = "Diák" });
-      _Roles.Add(new PersonRole { RoleID = 2, Role = "Tanár" });
-      _Roles.Add(new PersonRole { RoleID = 3, Role = "Admin" });
+      _Roles.Add(new PersonRole { RoleID = 1, Role = "Diák", GroupingOrder = 15 });
+      _Roles.Add(new PersonRole { RoleID = 2, Role = "Tanár", GroupingOrder = 10 });
+      _Roles.Add(new PersonRole { RoleID = 3, Role = "Admin", GroupingOrder = 5 });
+      _Roles.Add(new PersonRole { RoleID = 999, Role = "Saját", GroupingOrder = 0 });
     }
 
 
@@ -28,6 +30,10 @@ namespace JolTudomE_WP {
       get{
         return _DataSource._LoggedInInfo;
       }
+    }
+    internal static LoginResponse SelectedUserInfo {
+      get { return _DataSource._SelectedUserInfo; }
+      set { _DataSource._SelectedUserInfo = value; }
     }
 
     internal static ObservableCollection<PersonRole> GetRoles() {
@@ -39,6 +45,9 @@ namespace JolTudomE_WP {
     }
     internal static PersonRole GetRoleById(int id) {
       return _DataSource._Roles.FirstOrDefault(r => r.RoleID == id);
+    }
+    internal static PersonRole GetRoleStudent() {
+      return GetRoleById(1);
     }
 
     internal static UserDetail CreateUserStudent() {
@@ -63,6 +72,43 @@ namespace JolTudomE_WP {
       return true;
     }
 
+    internal async static Task<List<GroupedUser>> GetUserList() {
+      
+      string result = string.Empty;
+      if (_DataSource._LoggedInInfo.RoleID == 2) {
+        // teacher
+        // fetch students only
+        result = await _DataSource._WAM.GetUserList(GetRoleStudent().RoleID);
+      }
+      if (_DataSource._LoggedInInfo.RoleID == 3) {
+        // admin
+        // fetch everybody
+        result = await _DataSource._WAM.GetUserList(null);
+      }
+
+      var ul = JsonConvert.DeserializeObject<List<UserDetail>>(result);
+      List<GroupedUser> userlist = new List<GroupedUser>();
+
+      // convert it to GroupedList
+      if (_DataSource._LoggedInInfo.RoleID == 2) {
+        userlist.Add(new GroupedUser { DisplayName = _DataSource._LoggedInInfo.DisplayName, Role = GetRoleById(999), PersonID = _DataSource._LoggedInInfo.PersonID });
+        foreach (UserDetail ud in ul) {
+          userlist.Add(new GroupedUser { DisplayName = string.Format("{0}, {1}", ud.LastName.ToUpper(), ud.FirstName), Role = GetRoleById(1), PersonID = ud.PersonID });
+        }
+      }
+      else if (_DataSource._LoggedInInfo.RoleID == 3) {
+        // remove the logged in user
+        ul.Remove(ul.Find(u => u.PersonID == _DataSource._LoggedInInfo.PersonID));
+        // add the logged in user
+        userlist.Add(new GroupedUser { DisplayName = _DataSource._LoggedInInfo.DisplayName, Role = GetRoleById(999), PersonID = _DataSource._LoggedInInfo.PersonID });
+        foreach (UserDetail ud in ul) {
+          userlist.Add(new GroupedUser { DisplayName = string.Format("{0}, {1}", ud.LastName.ToUpper(), ud.FirstName), Role = GetRoleById(ud.RoleID), PersonID = ud.PersonID });
+        }
+      }
+
+      return userlist;
+    }
+
     internal async static Task<UserDetail> GetLoginDetail() {
       var result = await _DataSource._WAM.GetLoginDetail();
 
@@ -71,15 +117,15 @@ namespace JolTudomE_WP {
       return userdet;
     }
 
-    internal async static Task<List<Statistic>> GetStatistic(int personid) {
-      var result = await _DataSource._WAM.GetStatistics(personid);
+    internal async static Task<List<Statistic>> GetStatistic() {
+      var result = await _DataSource._WAM.GetStatistics(_DataSource._SelectedUserInfo.PersonID);
 
       var statlist = JsonConvert.DeserializeObject<List<Statistic>>(result);
       return statlist;
     }
 
-    internal async static Task<List<TestDetail>> GetTestDetail(int testid, int personid) {
-      var result = await _DataSource._WAM.GetTestDetails(testid, personid);
+    internal async static Task<List<TestDetail>> GetTestDetail(int testid) {
+      var result = await _DataSource._WAM.GetTestDetails(testid, _DataSource._SelectedUserInfo.PersonID);
 
       var testdetlist = JsonConvert.DeserializeObject<List<TestDetail>>(result);
       return testdetlist;
@@ -99,8 +145,8 @@ namespace JolTudomE_WP {
       return topiclist;
     }
 
-    internal async static Task<NewTest> GenerateTest(int personid, int count, List<int> topicids) {
-      var result = await _DataSource._WAM.StartNewTest(personid, count, topicids);
+    internal async static Task<NewTest> GenerateTest(int count, List<int> topicids) {
+      var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, count, topicids);
 
       var newtest = JsonConvert.DeserializeObject<NewTest>(result);
       return newtest;
@@ -114,8 +160,8 @@ namespace JolTudomE_WP {
       await _DataSource._WAM.CompleteTest(testid, questionid, answerid);
     }
 
-    internal async static Task CancelTest(int testid, int personid) {
-      await _DataSource._WAM.CancelTest(testid, personid);
+    internal async static Task CancelTest(int testid) {
+      await _DataSource._WAM.CancelTest(testid, _DataSource._LoggedInInfo.PersonID);
     }
 
   }

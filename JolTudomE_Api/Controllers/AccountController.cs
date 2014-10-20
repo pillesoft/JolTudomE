@@ -21,7 +21,8 @@ namespace JolTudomE_Api.Controllers {
     public LoginResponse Login() {
       var id = (CustomIdentity)User.Identity;
 
-      return new LoginResponse { PersonID = id.PersonID, RoleID = id.RoleID };
+      var p = DBContext.Person.Find(id.PersonID);
+      return new LoginResponse { PersonID = id.PersonID, RoleID = id.RoleID, DisplayName = string.Format("{0}, {1}", p.LastName.ToUpper(), p.FirstName) };
     }
 
     [Route("detail")]

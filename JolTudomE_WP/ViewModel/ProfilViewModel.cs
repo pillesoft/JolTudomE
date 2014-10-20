@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP.ViewModel {
-  class ProfilViewModel : BaseNotifyable, IViewModel {
+  public class ProfilViewModel : BaseNotifyable, IViewModel {
 
     private UserDetail _UserProfil;
 

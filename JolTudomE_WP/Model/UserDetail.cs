@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JolTudomE_WP.Model {
 
-  class UserDetail : BaseEditable {
+  public class UserDetail : BaseEditable {
     #region properties
 
     private int _PersonID;
@@ -113,9 +113,14 @@ namespace JolTudomE_WP.Model {
       set { SetProperty<PersonRole>(ref _Role, value); }
     }
 
+    private int _RoleID;
     public int RoleID {
       get {
         return Role.RoleID;
+      }
+      set {
+        SetProperty<int>(ref _RoleID, value);
+        Role = DataSource.GetRoleById(_RoleID);
       }
     }
 

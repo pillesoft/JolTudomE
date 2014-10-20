@@ -9,5 +9,6 @@ namespace JolTudomE_WP.Model {
     public string UserName { get; set; }
     public int PersonID { get; set; }
     public int RoleID { get; set; }
+    public string DisplayName { get; set; }
   }
 }

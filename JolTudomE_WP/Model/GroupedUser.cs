@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP.Model {
-  public class PersonRole {
-    public int RoleID { get; set; }
-    public string Role { get; set; }
-    public int GroupingOrder { get; set; }
+  public class GroupedUser {
+    public string DisplayName { get; set; }
+    public PersonRole Role { get; set; }
+    public int PersonID { get; set; }
+
   }
 }

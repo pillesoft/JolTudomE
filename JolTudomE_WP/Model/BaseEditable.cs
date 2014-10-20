@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP.Model {
-  abstract class BaseEditable:BaseNotifyable {
+  public abstract class BaseEditable:BaseNotifyable {
     #region Error handling
 
     private ObservableDictionary _Errors = new ObservableDictionary();

@@ -1,0 +1,69 @@
+﻿<Page
+    x:Class="JolTudomE_WP.View.LoggedInUserPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:JolTudomE_WP.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:vm="using:JolTudomE_WP.ViewModel"
+    xmlns:helper="using:JolTudomE_WP.Helper"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+  <Page.DataContext>
+    <vm:LoggedInUserViewModel />
+  </Page.DataContext>
+  <Page.Resources>
+    <helper:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <CollectionViewSource x:Name="UserListCVS" IsSourceGrouped="True"/>
+    <DataTemplate x:Key="UserListDataTemplate">
+      <StackPanel Margin="3">
+        <TextBlock Text="{Binding DisplayName}" FontSize="25" FontWeight="Bold" />
+      </StackPanel>
+    </DataTemplate>
+    <local:ListGroupStyleSelector x:Key="listGroupStyleSelector"/>
+
+  </Page.Resources>
+  <Grid x:Name="LayoutRoot">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Grid.ChildrenTransitions>
+      <TransitionCollection>
+        <EntranceThemeTransition/>
+      </TransitionCollection>
+    </Grid.ChildrenTransitions>
+
+    <ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
+    <Pivot Title="Jól Tudom E?" SelectedIndex="{Binding CurrentPivotItem, Mode=TwoWay}" Grid.Row="1">
+      <PivotItem Header="Felhasználók">
+        <ListView x:Name="UserListView" ItemsSource="{Binding UserListGrouped.View}"
+                  ItemClick="UserListView_ItemClick" IsItemClickEnabled="True"
+                  ItemTemplate="{StaticResource UserListDataTemplate}"
+                  GroupStyleSelector="{StaticResource listGroupStyleSelector}"/>
+        <!--ItemsSource="{Binding Source={StaticResource UserListCVS}}"-->
+      </PivotItem>
+      <PivotItem Header="Profil" DataContext="{Binding ProfilVM}">
+        <ScrollViewer>
+          <StackPanel>
+            <TextBox Header="Felhasználó név" Text="{Binding UserProfil.UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       />
+            <!--IsReadOnly="{Binding IsProfilInEditMode, Converter={StaticResource BoolToNegateConverter}, ConverterParameter=NOT}"-->
+            <TextBlock Text="{Binding UserProfil.Errors[UserName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2"
+                          />
+            <!--Visibility="{Binding UserProfil.Errors[UserName], Converter={StaticResource ErrorMessageToVisibilityConverter}}"-->
+            <TextBox Header="Előtag" Text="{Binding UserProfil.Prefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                       />
+            <!--IsReadOnly="{Binding IsProfilInEditMode, Converter={StaticResource BoolToNegateConverter}, ConverterParameter=NOT}"-->
+            <TextBox Header="Család név" Text="{Binding UserProfil.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="{Binding UserProfil.Errors[LastName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2" />
+            <TextBox Header="Középső név" Text="{Binding UserProfil.MiddleName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Header="Kereszt név" Text="{Binding UserProfil.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="{Binding UserProfil.Errors[FirstName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2" />
+          </StackPanel>
+        </ScrollViewer>
+      </PivotItem>
+
+    </Pivot>
+  </Grid>
+</Page>

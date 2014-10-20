@@ -5,10 +5,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace JolTudomE_WP.ViewModel {
-  public class MainViewModel : BaseNotifyable, IViewModel {
+  public class SelectedUserViewModel : BaseNotifyable, IViewModel {
 
     private bool _ShowProgressBar;
-
     public bool ShowProgressBar {
       get { return _ShowProgressBar; }
       set { SetProperty<bool>(ref _ShowProgressBar, value); }
@@ -25,8 +24,7 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     private ProfilViewModel _ProfilVM;
-
-    ProfilViewModel ProfilVM {
+    public ProfilViewModel ProfilVM {
       get { return _ProfilVM; }
       set {
         SetProperty<ProfilViewModel>(ref _ProfilVM, value);  
@@ -43,7 +41,6 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     private bool _IsStatisticEmpty;
-
     public bool IsStatisticEmpty {
       get { return _IsStatisticEmpty; }
       set { SetProperty<bool>(ref _IsStatisticEmpty, value); }
@@ -65,7 +62,6 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     private Course _SelectedCourse;
-
     public Course SelectedCourse {
       get { return _SelectedCourse; }
       set {
@@ -75,14 +71,12 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     private int _NumberQuestion;
-
     public int NumberQuestion {
       get { return _NumberQuestion; }
       set { SetProperty<int>(ref _NumberQuestion, value); }
     }
 
     private List<int> _SelectedTopics;
-
     public List<int> SelectedTopics {
       get { return _SelectedTopics; }
       set { _SelectedTopics = value; }
@@ -100,41 +94,31 @@ namespace JolTudomE_WP.ViewModel {
       set { SetProperty<bool>(ref _IsProfilButtonsShown, value); }
     }
 
-    public MainViewModel() {
+    private string _SelectedUser;
+    public string SelectedUser {
+      get { return _SelectedUser; }
+      set { SetProperty<string>(ref _SelectedUser, value); }
+    }
+
+    //private bool _ShowNewTestPivot;
+    //public bool ShowNewTestPivot {
+    //  get { return _ShowNewTestPivot; }
+    //  set { SetProperty<bool>(ref _ShowNewTestPivot, value); }
+    //}
+
+    //private bool _ShowProfilPivot;
+    //public bool ShowProfilPivot {
+    //  get { return _ShowProfilPivot; }
+    //  set { SetProperty<bool>(ref _ShowProfilPivot, value); }
+    //}
+
+    public SelectedUserViewModel() {
 
       NumberQuestion = 15;
       IsTopicErrorShown = false;
+      SelectedUser = "Belépett Felhasználó";
       ProfilVM = new ProfilViewModel();
 
-      /* DESIGN TIME DATA
-      Statistic st = new Statistic {
-        CorrectAnswer = 12,
-        Generated = DateTime.Now,
-        Percent = (decimal)0.67,
-        Questions = 15,
-        TestID = 1,
-        TotalTime = new TimeSpan(0, 12, 23)
-      };
-      Statistic st1 = new Statistic {
-        CorrectAnswer = 8,
-        Generated = DateTime.Now,
-        Percent = (decimal)0.12,
-        Questions = 15,
-        TestID = 2,
-        TotalTime = new TimeSpan(0, 10, 43)
-      };
-      StatisticList = new List<Statistic>();
-      StatisticList.Add(st);
-      StatisticList.Add(st1);
-
-      TopicList = new ObservableCollection<Topic>();
-      TopicList.Add(new Topic { TopicID = 1, TopicName = "topic name 1", TopicDescription = "topic 1 description" });
-      TopicList.Add(new Topic { TopicID = 2, TopicName = "topic name 2", TopicDescription = "topic 2 description" });
-      TopicList.Add(new Topic { TopicID = 1, TopicName = "topic name 1", TopicDescription = "topic 1 description" });
-      TopicList.Add(new Topic { TopicID = 2, TopicName = "topic name 2", TopicDescription = "topic 2 description" });
-      TopicList.Add(new Topic { TopicID = 1, TopicName = "topic name 1", TopicDescription = "topic 1 description" });
-      TopicList.Add(new Topic { TopicID = 2, TopicName = "topic name 2", TopicDescription = "topic 2 description" });
-      */
     }
 
     private async void GetTopicList() {
@@ -148,8 +132,12 @@ namespace JolTudomE_WP.ViewModel {
       ShowProgressBar = true;
       
       ProfilVM.LoadData(null);
+      SelectedUser = DataSource.SelectedUserInfo.DisplayName;
 
-      StatisticList = await DataSource.GetStatistic((int)customdata);
+      //ShowNewTestPivot = DataSource.SelectedUserInfo.PersonID == DataSource.LoggedInInfo.PersonID;
+      //ShowProfilPivot = DataSource.SelectedUserInfo.RoleID == DataSource.GetRoleStudent().RoleID;
+
+      StatisticList = await DataSource.GetStatistic();
       CourseList = await DataSource.GetCourses();
 
       ShowProgressBar = false;

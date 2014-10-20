@@ -14,15 +14,18 @@ namespace JolTudomE_WP.View {
   /// <summary>
   /// An empty page that can be used on its own or navigated to within a Frame.
   /// </summary>
-  public sealed partial class MainPage : Page {
+  public sealed partial class SelectedUserPage : Page {
     private NavigationHelper navigationHelper;
+    private SelectedUserViewModel _ViewModel;
 
-    public MainPage() {
+    public SelectedUserPage() {
       this.InitializeComponent();
 
       this.navigationHelper = new NavigationHelper(this);
       this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
       this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+      
+      _ViewModel = (SelectedUserViewModel)this.DataContext;
     }
 
     /// <summary>
@@ -45,13 +48,25 @@ namespace JolTudomE_WP.View {
     /// session.  The state will be null the first time a page is visited.</param>
     private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
 
-      // take out LoginPage from Backstack list
-      var login = Frame.BackStack.FirstOrDefault(b => b.SourcePageType.Name == "LoginPage");
-      if (login != null) {
-        Frame.BackStack.Remove(login);
+      if (DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
+        // take out LoginPage from Backstack list
+        // if Student logged in
+        var login = Frame.BackStack.FirstOrDefault(b => b.SourcePageType.Name == "LoginPage");
+        if (login != null) {
+          Frame.BackStack.Remove(login);
+        }
       }
 
-      ((IViewModel)this.DataContext).LoadData(DataSource.LoggedInInfo.PersonID);
+      // hide newtest pivot if the logged in and selected user is not the same
+      if (DataSource.SelectedUserInfo.PersonID != DataSource.LoggedInInfo.PersonID)
+        pvt.Items.Remove(NewTestPivotItem);
+
+      // hide the profil pivot if the logged in user is not student
+      // because in this case the profil view is in loggedinuserpage
+      if (DataSource.LoggedInInfo.RoleID != DataSource.GetRoleStudent().RoleID)
+        pvt.Items.Remove(ProfilPivotItem);
+
+      ((IViewModel)this.DataContext).LoadData(null);
 
     }
 
@@ -97,22 +112,20 @@ namespace JolTudomE_WP.View {
     }
 
     private void cmdStartTest_Click(object sender, RoutedEventArgs e) {
-      MainViewModel vm = (MainViewModel)this.DataContext;
-      if (vm.SelectedTopics.Count > 0) {
-        Frame.Navigate(typeof(TestExecutePage), new NewTestParam { NumberOfQuestions = vm.NumberQuestion, TopicIDs = vm.SelectedTopics });
+      if (_ViewModel.SelectedTopics.Count > 0) {
+        Frame.Navigate(typeof(TestExecutePage), new NewTestParam { NumberOfQuestions = _ViewModel.NumberQuestion, TopicIDs = _ViewModel.SelectedTopics });
       }
       else {
-        vm.IsTopicErrorShown = true;
+        _ViewModel.IsTopicErrorShown = true;
       }
     }
 
     private void lvTopic_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      MainViewModel vm = (MainViewModel)this.DataContext;
-      vm.SelectedTopics = new List<int>();
+      _ViewModel.SelectedTopics = new List<int>();
       foreach(Topic t in lvTopic.SelectedItems) {
-        vm.SelectedTopics.Add(t.TopicID);
+        _ViewModel.SelectedTopics.Add(t.TopicID);
       }
-      vm.IsTopicErrorShown = vm.SelectedTopics.Count == 0;
+      _ViewModel.IsTopicErrorShown = _ViewModel.SelectedTopics.Count == 0;
     }
 
 

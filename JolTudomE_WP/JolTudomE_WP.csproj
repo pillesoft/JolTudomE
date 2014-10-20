@@ -98,30 +98,34 @@
     <Compile Include="Helper\IsCheckedToIntConverter.cs" />
     <Compile Include="Model\BaseEditable.cs" />
     <Compile Include="Model\Course.cs" />
+    <Compile Include="Model\GroupedUser.cs" />
     <Compile Include="Model\LoginResponse.cs" />
     <Compile Include="Model\NewTestClasses.cs" />
     <Compile Include="Model\NewTestParam.cs" />
     <Compile Include="Model\PersonRole.cs" />
     <Compile Include="Model\SPError.cs" />
-    <Compile Include="Model\TestDetailParam.cs" />
     <Compile Include="Model\Topic.cs" />
     <Compile Include="Model\UserDetail.cs" />
     <Compile Include="ViewModel\IViewModel.cs" />
     <Compile Include="ViewModel\ProfilViewModel.cs" />
     <Compile Include="ViewModel\RegisterViewModel.cs" />
+    <Compile Include="ViewModel\LoggedInUserViewModel.cs" />
     <Compile Include="ViewModel\TestExecuteViewModel.cs" />
     <Compile Include="ViewModel\TestDetailViewModel.cs" />
+    <Compile Include="View\LoggedInUserPage.xaml.cs">
+      <DependentUpon>LoggedInUserPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="View\SelectedUserPage.xaml.cs">
+      <DependentUpon>SelectedUserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\BaseNotifyable.cs" />
     <Compile Include="Model\Statistic.cs" />
     <Compile Include="Model\TestDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\SelectedUserViewModel.cs" />
     <Compile Include="View\RegisterPage.xaml.cs">
       <DependentUpon>RegisterPage.xaml</DependentUpon>
     </Compile>
@@ -167,11 +171,15 @@
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\LoggedInUserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainPage.xaml">
+    <Page Include="View\SelectedUserPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

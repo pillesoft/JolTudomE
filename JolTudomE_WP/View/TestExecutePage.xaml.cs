@@ -98,7 +98,7 @@ namespace JolTudomE_WP.View {
       ContentDialogResult result = await TestCancelDialog.ShowAsync();
       if (result == ContentDialogResult.Secondary) {
         TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
-        await DataSource.CancelTest(vm.NewTest.TestID, DataSource.LoggedInInfo.PersonID);
+        await DataSource.CancelTest(vm.NewTest.TestID);
 
         Frame.GoBack();
       }

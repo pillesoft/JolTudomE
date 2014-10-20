@@ -7,7 +7,7 @@
   xmlns:vm="using:JolTudomE_WP.ViewModel"
   xmlns:helper="using:JolTudomE_WP.Helper"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
-    x:Class="JolTudomE_WP.View.MainPage"
+    x:Class="JolTudomE_WP.View.SelectedUserPage"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   <Page.Resources>
@@ -256,7 +256,15 @@
         </Setter.Value>
       </Setter>
     </Style>
+    <DataTemplate x:Key="PivotTitleTemplate">
+    	<Grid>
+    		<TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding}" VerticalAlignment="Top" FontWeight="Bold" FontSize="21.333"/>
+    	</Grid>
+    </DataTemplate>
   </Page.Resources>
+  <Page.DataContext>
+    <vm:SelectedUserViewModel />
+  </Page.DataContext>
 
   <Page.BottomAppBar>
     <CommandBar Visibility="{Binding IsProfilButtonsShown, Converter={StaticResource BoolToVisibilityConverter}}" ClosedDisplayMode="Minimal">
@@ -272,9 +280,6 @@
     </CommandBar>
   </Page.BottomAppBar>
 
-  <Page.DataContext>
-    <vm:MainViewModel />
-  </Page.DataContext>
   <Page.Transitions>
     <TransitionCollection>
       <NavigationThemeTransition>
@@ -288,7 +293,7 @@
       <RowDefinition/>
     </Grid.RowDefinitions>
     <ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
-    <Pivot SelectedIndex="{Binding CurrentPivotItem, Mode=TwoWay}" Title="Jól Tudom E?" Grid.Row="1">
+    <Pivot x:Name="pvt" SelectedIndex="{Binding CurrentPivotItem, Mode=TwoWay}" Title="{Binding SelectedUser}" Grid.Row="1" TitleTemplate="{StaticResource PivotTitleTemplate}">
       <PivotItem Header="Statisztika">
         <Grid>
           <TextBlock Text="Nincsen még befejezett Teszt!" FontSize="22" TextWrapping="WrapWholeWords"
@@ -300,7 +305,7 @@
           <ListView x:Name="lvStatistic" ItemsSource="{Binding StatisticList}" ItemTemplate="{StaticResource StatisticListDataTemplate}" ItemClick="lvStatistic_ItemClick" IsItemClickEnabled="True"/>
         </Grid>
       </PivotItem>
-      <PivotItem Header="Új Teszt">
+      <PivotItem x:Name="NewTestPivotItem" Header="Új Teszt">
         <ScrollViewer>
           <Grid>
             <Grid.RowDefinitions>
@@ -348,7 +353,7 @@
           </Grid>
         </ScrollViewer>
       </PivotItem>
-      <PivotItem Header="Profil" DataContext="{Binding ProfilVM}">
+      <PivotItem x:Name="ProfilPivotItem" Header="Profil" DataContext="{Binding ProfilVM}">
         <ScrollViewer>
           <Grid>
             <Grid.RowDefinitions>

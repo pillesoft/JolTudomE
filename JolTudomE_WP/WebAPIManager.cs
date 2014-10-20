@@ -173,6 +173,24 @@ namespace JolTudomE_WP {
       return response;
     }
 
+    internal async Task<string> GetUserList(int? roletosearch) {
+      string fullurl = string.Empty;
+      if (roletosearch == null) {
+        fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/searchbyrole");
+      }
+      else {
+        fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/account/searchbyrole/roletosearch");
+      }
+      string response = string.Empty;
+      try {
+        response = await DoRequest(fullurl);
+      }
+      catch {
+        throw;
+      }
+      return response;
+    }
+
     internal async Task<string> GetStatistics(int personid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/statistic", personid);
 

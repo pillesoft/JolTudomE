@@ -54,9 +54,7 @@ namespace JolTudomE_WP.View {
     /// a dictionary of state preserved by this page during an earlier
     /// session.  The state will be null the first time a page is visited.</param>
     private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
-
-      IViewModel vm = this.DataContext as IViewModel;
-      vm.LoadData(new TestDetailParam { TestID = (int)e.NavigationParameter, PersonID = DataSource.LoggedInInfo.PersonID });
+      ((IViewModel)this.DataContext).LoadData(e.NavigationParameter);
     }
 
     /// <summary>

@@ -98,7 +98,7 @@ namespace JolTudomE_WP.ViewModel {
     public async void LoadData(object customdata) {
       NewTestParam p = (NewTestParam)customdata;
 
-      var result = await DataSource.GenerateTest(DataSource.LoggedInInfo.PersonID, p.NumberOfQuestions, p.TopicIDs);
+      var result = await DataSource.GenerateTest(p.NumberOfQuestions, p.TopicIDs);
       NewTest = result;
 
     }
