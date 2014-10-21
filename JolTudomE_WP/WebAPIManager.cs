@@ -68,7 +68,18 @@ namespace JolTudomE_WP {
       }
       catch (WebException wexc) {
         _Token = string.Empty;
-        if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+        DataSource.LoggedInInfo = null;
+        if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.Unauthorized) {
+          // that means the session is expired
+          ((App)App.Current).SessionExpired();
+          return null;
+          // throw new UnauthorizedException();
+        }
+        else if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.InternalServerError) {
+          string modelerrors = GetResponse((HttpWebResponse)wexc.Response);
+          var errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
+          throw new ApiModelException(ExceptionHandler.GetUserFriendlyErrorMessage(errdetails["ExceptionMessage"]));
+        }
         else throw;
       }
 

@@ -27,10 +27,10 @@ namespace JolTudomE_WP {
 
 
     internal static LoginResponse LoggedInInfo {
-      get{
-        return _DataSource._LoggedInInfo;
-      }
+      get { return _DataSource._LoggedInInfo; }
+      set { _DataSource._LoggedInInfo = value; }
     }
+
     internal static LoginResponse SelectedUserInfo {
       get { return _DataSource._SelectedUserInfo; }
       set { _DataSource._SelectedUserInfo = value; }
@@ -54,8 +54,8 @@ namespace JolTudomE_WP {
       return new UserDetail { UserName = "", Prefix="", MiddleName="", Password = "", FirstName = "", LastName = "", Role = GetRoleByName("Diák") };
     }
 
-    internal static bool IsAuthenticated() {
-      return _DataSource._LoggedInInfo != null;
+    internal static bool IsAuthenticated {
+      get { return _DataSource._LoggedInInfo != null; }
     }
 
     internal async static Task<bool> MakeLogin(string username, string password) {
@@ -73,7 +73,8 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task<List<GroupedUser>> GetUserList() {
-      
+      if (!IsAuthenticated) return null;
+
       string result = string.Empty;
       if (_DataSource._LoggedInInfo.RoleID == 2) {
         // teacher
@@ -85,6 +86,7 @@ namespace JolTudomE_WP {
         // fetch everybody
         result = await _DataSource._WAM.GetUserList(null);
       }
+      if (result == null) return null;
 
       var ul = JsonConvert.DeserializeObject<List<UserDetail>>(result);
       List<GroupedUser> userlist = new List<GroupedUser>();
@@ -110,21 +112,29 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task<UserDetail> GetLoginDetail() {
+      if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.GetLoginDetail();
-
-      var userdet = JsonConvert.DeserializeObject<UserDetail>(result);
-      //userdet.Role = DataSource.GetRoleById(_DataSource._LoggedInInfo.RoleID);
-      return userdet;
+      if (result != null) {
+        var userdet = JsonConvert.DeserializeObject<UserDetail>(result);
+        //userdet.Role = DataSource.GetRoleById(_DataSource._LoggedInInfo.RoleID);
+        return userdet;
+      }
+      else return null;
     }
 
     internal async static Task<List<Statistic>> GetStatistic() {
+      if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.GetStatistics(_DataSource._SelectedUserInfo.PersonID);
-
-      var statlist = JsonConvert.DeserializeObject<List<Statistic>>(result);
-      return statlist;
+      if (result != null) {
+        var statlist = JsonConvert.DeserializeObject<List<Statistic>>(result);
+        return statlist;
+      }
+      else return null;
     }
 
     internal async static Task<List<TestDetail>> GetTestDetail(int testid) {
+      if (!IsAuthenticated) return null;
+
       var result = await _DataSource._WAM.GetTestDetails(testid, _DataSource._SelectedUserInfo.PersonID);
 
       var testdetlist = JsonConvert.DeserializeObject<List<TestDetail>>(result);
@@ -132,13 +142,17 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task<ObservableCollection<Course>> GetCourses() {
+      if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.GetCourses();
-
-      var courselist = JsonConvert.DeserializeObject<ObservableCollection<Course>>(result);
-      return courselist;
+      if (result != null) {
+        var courselist = JsonConvert.DeserializeObject<ObservableCollection<Course>>(result);
+        return courselist;
+      }
+      else return null;
     }
 
     internal async static Task<ObservableCollection<Topic>> GetTopics(int courseid) {
+      if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.GetTopics(courseid);
 
       var topiclist = JsonConvert.DeserializeObject<ObservableCollection<Topic>>(result);
@@ -146,6 +160,7 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task<NewTest> GenerateTest(int count, List<int> topicids) {
+      if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, count, topicids);
 
       var newtest = JsonConvert.DeserializeObject<NewTest>(result);
@@ -153,15 +168,18 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task AnswerTest(int testid, int questionid, int answerid) {
-      await _DataSource._WAM.AnswerTest(testid, questionid, answerid);
+      if (IsAuthenticated)
+        await _DataSource._WAM.AnswerTest(testid, questionid, answerid);
     }
 
     internal async static Task CompleteTest(int testid, int questionid, int answerid) {
-      await _DataSource._WAM.CompleteTest(testid, questionid, answerid);
+      if (IsAuthenticated) 
+        await _DataSource._WAM.CompleteTest(testid, questionid, answerid);
     }
 
     internal async static Task CancelTest(int testid) {
-      await _DataSource._WAM.CancelTest(testid, _DataSource._LoggedInInfo.PersonID);
+      if (IsAuthenticated)
+        await _DataSource._WAM.CancelTest(testid, _DataSource._LoggedInInfo.PersonID);
     }
 
   }

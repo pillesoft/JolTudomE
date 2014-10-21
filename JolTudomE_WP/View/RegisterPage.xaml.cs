@@ -1,20 +1,7 @@
 ﻿using JolTudomE_WP.Common;
 using JolTudomE_WP.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -92,41 +79,28 @@ namespace JolTudomE_WP.View {
 
     #endregion
 
-    private void cmdCancel_Click(object sender, RoutedEventArgs e) {
-      Frame.Navigate(typeof(LoginPage));
-    }
+    //private async void cmdRegister_Click(object sender, RoutedEventArgs e) {
+    //  RegisterViewModel vm = DataContext as RegisterViewModel;
+    //  if (!vm.NewUser.IsValid) {
+    //    ShowDialog("Regisztrálási Hiba", "A beviteli mezők adatai hibásak!");
+    //  }
+    //  else {
+    //    prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+    //    try {
+    //      await DataSource.MakeRegister(vm.NewUser);
+    //      ShowDialog("Regisztráció", "A regisztráció sikerült!");
+    //      Frame.Navigate(typeof(LoginPage));
+    //    }
+    //    catch (ApiModelException mexc) {
+    //      prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+    //      ShowDialog("Regisztrálási Hiba", mexc.Message);
+    //    }
+    //    catch (Exception exc) {
+    //      prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+    //      ShowDialog("Regisztrálási Hiba", exc.Message);
+    //    }
+    //  }
+    //}
 
-    private async void cmdRegister_Click(object sender, RoutedEventArgs e) {
-      RegisterViewModel vm = DataContext as RegisterViewModel;
-      if (!vm.NewUser.IsValid) {
-        ShowDialog("Regisztrálási Hiba", "A beviteli mezők adatai hibásak!");
-      }
-      else {
-        prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        try {
-          await DataSource.MakeRegister(vm.NewUser);
-          ShowDialog("Regisztráció", "A regisztráció sikerült!");
-          Frame.Navigate(typeof(LoginPage));
-        }
-        catch (ApiModelException mexc) {
-          prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-          ShowDialog("Regisztrálási Hiba", mexc.Message);
-        }
-        catch (Exception exc) {
-          prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-          ShowDialog("Regisztrálási Hiba", exc.Message);
-        }
-      }
-    }
-
-    private async void ShowDialog(string title, string msg) {
-      ContentDialog errordialog = new ContentDialog() {
-        Title = title,
-        Content = msg,
-        PrimaryButtonText = "Ok"
-      };
-
-      await errordialog.ShowAsync();
-    }
   }
 }

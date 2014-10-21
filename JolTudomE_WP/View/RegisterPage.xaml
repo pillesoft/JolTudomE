@@ -7,14 +7,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
   xmlns:vm="using:JolTudomE_WP.ViewModel"
+  xmlns:helper="using:JolTudomE_WP.Helper"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+  <Page.Resources>
+    <helper:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+  </Page.Resources>
   <Page.DataContext>
     <vm:RegisterViewModel />
   </Page.DataContext>
   <Page.BottomAppBar>
     <CommandBar>
-      <AppBarButton x:Name="cmdRegister" Icon="Accept" Label="Regisztrál" Click="cmdRegister_Click"/>
-      <AppBarButton x:Name="cmdCancel" Icon="Cancel" Label="Mégse" Click="cmdCancel_Click"/>
+      <AppBarButton Icon="Accept" Label="Regisztrál" Command="{Binding RegisterCommand, Mode=OneWay}"/>
+      <AppBarButton Icon="Cancel" Label="Mégse" Command="{Binding CancelCommand, Mode=OneWay}"/>
     </CommandBar>
   </Page.BottomAppBar>
 
@@ -34,7 +38,7 @@
     <StackPanel Grid.Row="0" Margin="19,0,0,0">
       <TextBlock Text="Jól Tudom E?" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
       <TextBlock Text="Regisztráció" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
-      <ProgressBar x:Name="prgBar" IsIndeterminate="True" Margin="0,20,0,0" Visibility="Collapsed"/>
+      <ProgressBar x:Name="prgBar" IsIndeterminate="True" Margin="0,20,0,0" Visibility="{Binding IsProgressBarVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
     </StackPanel>
 
     <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">

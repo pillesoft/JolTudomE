@@ -22,6 +22,10 @@ namespace JolTudomE_WP.Helper
       if ((bool)value) {
         return parameter.ToString();
       }
+      if (!(bool)value) {
+        return 0.ToString();
+      }
+
       else {
         return string.Empty;
       }

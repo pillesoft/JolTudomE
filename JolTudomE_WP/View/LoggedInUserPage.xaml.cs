@@ -92,13 +92,6 @@ namespace JolTudomE_WP.View {
 
     #endregion
 
-    private void UserListView_ItemClick(object sender, ItemClickEventArgs e) {
-      var seluser = (JolTudomE_WP.Model.GroupedUser)e.ClickedItem;
-      DataSource.SelectedUserInfo = new Model.LoginResponse { DisplayName = seluser.DisplayName, PersonID = seluser.PersonID, RoleID = seluser.Role.RoleID };
-
-      Frame.Navigate(typeof(SelectedUserPage));
-    }
-
   }
 
   public class ListGroupStyleSelector : GroupStyleSelector {

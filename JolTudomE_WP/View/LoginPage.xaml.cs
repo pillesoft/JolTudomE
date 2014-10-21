@@ -106,10 +106,10 @@ namespace JolTudomE_WP.View {
         bool loginres = await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password);
         if (DataSource.LoggedInInfo.RoleID == DataSource.GetRoleStudent().RoleID) {
           DataSource.SelectedUserInfo = DataSource.LoggedInInfo;
-          Frame.Navigate(typeof(SelectedUserPage));
+          NavigationService.NavigateTo(PageEnum.SelectedUser);
         }
         else {
-          Frame.Navigate(typeof(LoggedInUserPage));
+          NavigationService.NavigateTo(PageEnum.LoggedInUser);
         }
       }
       catch (UnauthorizedException) {
@@ -133,7 +133,7 @@ namespace JolTudomE_WP.View {
     }
 
     private void cmdRegister_Click(object sender, RoutedEventArgs e) {
-      Frame.Navigate(typeof(RegisterPage));
+      NavigationService.NavigateTo(PageEnum.Register);
     }
 
   }

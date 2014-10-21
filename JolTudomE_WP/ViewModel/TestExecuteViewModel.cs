@@ -46,12 +46,15 @@ namespace JolTudomE_WP.ViewModel {
 
     public int CheckedAnswer {
       get { return _CheckedAnswer; }
-      set { SetProperty<int>(ref _CheckedAnswer, value); }
+      set {
+        SetProperty<int>(ref _CheckedAnswer, value);
+        NextQuestionCommand.RaiseCanExecuteChanged();
+        StopTestCommand.RaiseCanExecuteChanged();
+      }
     }
 
 
     private RelayCommand _NextQuestionCommand;
-
     public RelayCommand NextQuestionCommand {
       get {
         return _NextQuestionCommand
@@ -66,18 +69,26 @@ namespace JolTudomE_WP.ViewModel {
     }
 
 
-    public TestExecuteViewModel() {
-      
-      /* DESIGN TIME DATA
-      TestQuestion = "1./15. Ez az elso kerdes";
-      Answers = new string[] { "Válasz 1", "Válasz 2", "Válasz 3", "Válasz 4" };
-      */
+    private RelayCommand _StopTestCommand;
+    public RelayCommand StopTestCommand {
+      get {
+        return _StopTestCommand
+      ?? (_StopTestCommand = new RelayCommand(
+      async () => {
+        int answerid = CurrentQuestion.Answers[CheckedAnswer - 1].AnswerID;
+        await DataSource.CompleteTest(NewTest.TestID, CurrentQuestion.QuestionID, answerid);
 
-      CheckedAnswer = 3;
+        NavigationService.GoBack();
+      },
+      () => CheckedAnswer > 0));
+      }
     }
+
+    public TestExecuteViewModel() { }
 
     private bool CanGoNext() {
       return NewTest != null && 
+        CheckedAnswer > 0 &&
         NewTest.Questions.IndexOf(_TestQuestions.Current) + 1 != NewTest.Questions.Count;
     }
 

@@ -3,6 +3,7 @@ using JolTudomE_Api.Security;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -141,10 +142,13 @@ namespace JolTudomE_Api.Controllers {
     [HttpGet]
     public IHttpActionResult CompleteTest(int testid, int questionid, int answerid) {
       var id = (CustomIdentity)User.Identity;
-
-      DBContext.usp_CheckedAnswer(testid, questionid, answerid, true);
-      UpdateSession();
-
+      try {
+        DBContext.usp_CheckedAnswer(testid, questionid, answerid, true);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        throw ece_exc.InnerException;
+      }
       return Ok();
     }
 

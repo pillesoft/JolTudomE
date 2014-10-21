@@ -1,4 +1,5 @@
-﻿using JolTudomE_WP.Model;
+﻿using JolTudomE_WP.Common;
+using JolTudomE_WP.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +10,6 @@ namespace JolTudomE_WP.ViewModel {
   public class LoggedInUserViewModel : BaseNotifyable, IViewModel {
 
     private bool _ShowProgressBar;
-
     public bool ShowProgressBar {
       get { return _ShowProgressBar; }
       set { SetProperty<bool>(ref _ShowProgressBar, value); }
@@ -30,12 +30,31 @@ namespace JolTudomE_WP.ViewModel {
       get { return _UserList; }
       set {
         SetProperty<List<GroupedUser>>(ref _UserList, value);
-
-        var result = from user in _UserList group user by user.Role into grp orderby grp.Key.GroupingOrder select grp;
-        UserListGrouped.Source = result;
-
+        if (_UserList != null) {
+          var result = from user in _UserList group user by user.Role into grp orderby grp.Key.GroupingOrder select grp;
+          UserListGrouped.Source = result;
+        }
       }
     }
+
+    private RelayCommand<GroupedUser> _ItemClickedCommand;
+    public RelayCommand<GroupedUser> ItemClickedCommand {
+      get {
+        return _ItemClickedCommand
+      ?? (_ItemClickedCommand = new RelayCommand<GroupedUser>(
+      (gu) => {
+        DataSource.SelectedUserInfo = new Model.LoginResponse {
+          DisplayName = gu.DisplayName,
+          PersonID = gu.PersonID,
+          RoleID = gu.Role.RoleID
+        };
+
+        NavigationService.NavigateTo(PageEnum.SelectedUser);
+      },
+      (gu) => true));
+      }
+    }
+
 
     private ProfilViewModel _ProfilVM;
     public ProfilViewModel ProfilVM {

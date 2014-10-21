@@ -18,7 +18,7 @@
   <Page.BottomAppBar>
     <CommandBar>
       <AppBarButton Icon="Next" Label="Következő" Command="{Binding NextQuestionCommand, Mode=OneWay}"/>
-      <AppBarButton x:Name="cmdStop" Icon="Stop" Label="Befejez" Click="cmdStop_Click" />
+      <AppBarButton x:Name="cmdStop" Icon="Stop" Label="Befejez" Command="{Binding StopTestCommand, Mode=OneWay}" />
       <AppBarButton x:Name="cmdCancel" Icon="Cancel" Label="Megszakít" Click="cmdCancel_Click"/>
     </CommandBar>
   </Page.BottomAppBar>

@@ -36,7 +36,7 @@ namespace JolTudomE_WP.ViewModel {
       get { return _StatisticList; }
       set {
         SetProperty<List<Statistic>>(ref _StatisticList, value);
-        IsStatisticEmpty = _StatisticList.Count == 0;
+        IsStatisticEmpty = _StatisticList != null && _StatisticList.Count == 0;
       }
     }
 
@@ -51,7 +51,7 @@ namespace JolTudomE_WP.ViewModel {
       get { return _CourseList; }
       set { 
         SetProperty<ObservableCollection<Course>>(ref _CourseList, value);
-        SelectedCourse = _CourseList.First();
+        if (_CourseList != null) SelectedCourse = _CourseList.First();
       }
     }
 

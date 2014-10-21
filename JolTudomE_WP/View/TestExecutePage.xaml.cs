@@ -41,7 +41,6 @@ namespace JolTudomE_WP.View {
     /// a dictionary of state preserved by this page during an earlier
     /// session.  The state will be null the first time a page is visited.</param>
     private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
-
       ((IViewModel)this.DataContext).LoadData(e.NavigationParameter);
     }
 
@@ -80,14 +79,6 @@ namespace JolTudomE_WP.View {
     }
 
     #endregion
-
-    private async void cmdStop_Click(object sender, RoutedEventArgs e) {
-      TestExecuteViewModel vm = (TestExecuteViewModel)this.DataContext;
-      int answerid = vm.CheckedAnswer == 0 ? 0 : vm.CurrentQuestion.Answers[vm.CheckedAnswer - 1].AnswerID;
-      await DataSource.CompleteTest(vm.NewTest.TestID, vm.CurrentQuestion.QuestionID, answerid);
-
-      Frame.GoBack();
-    }
 
     private void cmdCancel_Click(object sender, RoutedEventArgs e) {
       TestCancel();

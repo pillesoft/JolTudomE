@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using System;
 
 // The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -15,6 +16,7 @@ namespace JolTudomE_WP {
   /// </summary>
   public sealed partial class App : Application {
     private TransitionCollection transitions;
+    private bool IsDialogOpen;
 
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
@@ -23,6 +25,7 @@ namespace JolTudomE_WP {
     public App() {
       this.InitializeComponent();
       this.Suspending += this.OnSuspending;
+      this.Resuming += this.OnResuming;
     }
 
     /// <summary>
@@ -82,7 +85,8 @@ namespace JolTudomE_WP {
         // When the navigation stack isn't restored navigate to the first page,
         // configuring the new page by passing required information as a navigation
         // parameter.
-        rootFrame.Navigate(typeof(LoginPage));
+        NavigationService.NavigateTo(PageEnum.Login);
+        //rootFrame.Navigate(typeof(LoginPage));
 
         //if (!rootFrame.Navigate(typeof(MainPage), e.Arguments)) {
         //  throw new Exception("Failed to create initial page");
@@ -114,5 +118,40 @@ namespace JolTudomE_WP {
       await SuspensionManager.SaveAsync();
       deferral.Complete();
     }
+
+    void OnResuming(object sender, object e) {
+      //var deferral = e.SuspendingOperation.GetDeferral();
+      //await SuspensionManager.RestoreAsync();
+      //deferral.Complete();
+    }
+
+    public async void SessionExpired() {
+      if (!IsDialogOpen) {
+        IsDialogOpen = true;
+
+        ContentDialog dialog = new ContentDialog() {
+          Title = "Lejárt a Session!",
+          Content = "Az éppen aktuális munkamenet lejárt.\nLépjen be újra!",
+          PrimaryButtonText = "Ok",
+        };
+
+        await dialog.ShowAsync();
+        Frame rootFrame = Window.Current.Content as Frame;
+        rootFrame.BackStack.Clear();
+        IsDialogOpen = false;
+        rootFrame.Navigate(typeof(LoginPage));
+      }
+    }
+
+    public async void ShowDialog(string title, string msg) {
+      ContentDialog errordialog = new ContentDialog() {
+        Title = title,
+        Content = msg,
+        PrimaryButtonText = "Ok"
+      };
+
+      await errordialog.ShowAsync();
+    }
+
   }
 }

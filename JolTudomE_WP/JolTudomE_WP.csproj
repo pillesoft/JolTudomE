@@ -92,10 +92,12 @@
     <Compile Include="DataSource.cs" />
     <Compile Include="Helper\BoolToTestDetImageSourceConverter.cs" />
     <Compile Include="Helper\BoolToNegateConverter.cs" />
+    <Compile Include="Helper\ItemClickConverter.cs" />
     <Compile Include="Helper\BoolToVisibilityConverter.cs" />
     <Compile Include="Helper\ErrorMessageToVisibilityConverter.cs" />
     <Compile Include="Helper\ExceptionHandler.cs" />
     <Compile Include="Helper\IsCheckedToIntConverter.cs" />
+    <Compile Include="NavigationService.cs" />
     <Compile Include="Model\BaseEditable.cs" />
     <Compile Include="Model\Course.cs" />
     <Compile Include="Model\GroupedUser.cs" />
