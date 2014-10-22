@@ -12,22 +12,7 @@ namespace JolTudomE_WP.Helper {
       new SPError{SPName = "Add New User Error", ErrorCode = 100, ErrorMessage = "A jelszó minimum 8 karakter kell hogy legyen"},
       new SPError{SPName = "Add New User Error", ErrorCode = 1000, ErrorMessage = "A csoport azonosító nem megfelelő"},
     };
-    /*
-    internal static string GetFaultExceptionMessage(FaultException<ExceptionDetail> excobj) {
-      string msg = "";
-      var faultmess = excobj.CreateMessageFault();
-      if (faultmess.HasDetail) {
-        ExceptionDetail faultexcdet = faultmess.GetDetail<ExceptionDetail>();
-        msg = faultexcdet.Message;
-
-        while (faultexcdet.InnerException != null) {
-          msg = faultexcdet.InnerException.Message;
-          faultexcdet = faultexcdet.InnerException;
-        }
-      }
-      return msg;
-    }
-    */
+    
     /// <summary>
     /// calculates the collection of the error codes recevied from SQL stored procedure
     /// </summary>
@@ -67,34 +52,5 @@ namespace JolTudomE_WP.Helper {
       return msg;
     }
 
-    /*
-    internal static bool IsSessionNotAvailableException(FaultException<ExceptionDetail> excobj) {
-      bool retvalue = false;
-
-      var faultmess = excobj.CreateMessageFault();
-      if (faultmess.HasDetail) {
-        ExceptionDetail faultexcdet = faultmess.GetDetail<ExceptionDetail>();
-        if (faultexcdet.Type == "JolTudomE_WS.Security.SessionNotAvailable") {
-          retvalue = true;
-        }
-      }
-
-      return retvalue;
-    }
-
-    internal static bool IsSqlException(FaultException<ExceptionDetail> excobj) {
-      bool retvalue = false;
-
-      var faultmess = excobj.CreateMessageFault();
-      if (faultmess.HasDetail) {
-        ExceptionDetail faultexcdet = faultmess.GetDetail<ExceptionDetail>();
-        if (faultexcdet.Type == "System.Data.SqlClient.SqlException") {
-          retvalue = true;
-        }
-      }
-
-      return retvalue;
-    }
-       */
   }
 }
