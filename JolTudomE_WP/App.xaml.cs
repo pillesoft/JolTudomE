@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Navigation;
 using System;
 using Windows.Storage;
 using Windows.Security.Credentials;
+using System.Threading.Tasks;
 
 // The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -64,13 +65,27 @@ namespace JolTudomE_WP {
         rootFrame.CacheSize = 1;
 
         if (e.PreviousExecutionState == ApplicationExecutionState.Terminated) {
-          // Restore the saved session state only when appropriate.
-          try {
-            await SuspensionManager.RestoreAsync();
+
+          // try to authenticate the user, who was in when the termination is occured
+          PasswordCredential cred = GetCredential();
+          if (cred != null) {
+            cred.RetrievePassword();
+            try {
+              await DataSource.MakeLogin(cred.UserName, cred.Password, () => { });
+            }
+            catch { }
           }
-          catch (SuspensionManagerException) {
-            // Something went wrong restoring state.
-            // Assume there is no state and continue.
+
+          if (DataSource.IsAuthenticated) {
+            // Restore the saved session state only when appropriate.
+            // and if the previous login attempt succeeded
+            try {
+              await SuspensionManager.RestoreAsync();
+            }
+            catch (SuspensionManagerException) {
+              // Something went wrong restoring state.
+              // Assume there is no state and continue.
+            }
           }
         }
 
@@ -110,7 +125,16 @@ namespace JolTudomE_WP {
       else {
         cred.RetrievePassword();
         try {
-          await DataSource.MakeLogin(cred.UserName, cred.Password);
+          await DataSource.MakeLogin(cred.UserName, cred.Password,
+            () => {
+              if (DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
+                NavigationService.NavigateTo(PageEnum.SelectedUser);
+              }
+              else {
+                NavigationService.NavigateTo(PageEnum.LoggedInUser);
+              }
+            });
+
         }
         catch (UnauthorizedException) {
           ShowDialog("Bejelentkezési Hiba", "A letárolt Felhasználó név/Jelszó már nem megfelelő!");
@@ -143,6 +167,9 @@ namespace JolTudomE_WP {
     /// <param name="e">Details about the suspend request.</param>
     private async void OnSuspending(object sender, SuspendingEventArgs e) {
       var deferral = e.SuspendingOperation.GetDeferral();
+
+
+
       await SuspensionManager.SaveAsync();
       deferral.Complete();
     }
@@ -188,6 +215,14 @@ namespace JolTudomE_WP {
 
     public void SaveCredential(string username, string password) {
       PasswordVault vault = new PasswordVault();
+      
+      // remove the already saved credentials
+      var credcoll = vault.FindAllByResource(_CredLockerResource);
+      foreach (var item in credcoll) {
+        vault.Remove(item);
+      }
+
+      // save the new credential
       PasswordCredential cred = new PasswordCredential(_CredLockerResource, username, password);
       vault.Add(cred);
     }

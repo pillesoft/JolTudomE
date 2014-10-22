@@ -100,7 +100,15 @@ namespace JolTudomE_WP.View {
     private async void cmdLogin_Click(object sender, RoutedEventArgs e) {
       prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
       try {
-        await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password);
+        await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password,
+          () => {
+            if (DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
+              NavigationService.NavigateTo(PageEnum.SelectedUser);
+            }
+            else {
+              NavigationService.NavigateTo(PageEnum.LoggedInUser);
+            }
+          });
       }
       catch (UnauthorizedException) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

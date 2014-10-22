@@ -1,5 +1,6 @@
 ﻿using JolTudomE_WP.Model;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace JolTudomE_WP {
       get { return _DataSource._LoggedInInfo != null; }
     }
 
-    internal async static Task MakeLogin(string username, string password) {
+    internal async static Task MakeLogin(string username, string password, Action postlogin) {
       var loginresult = await _DataSource._WAM.Login(username, password);
 
       _DataSource._LoggedInInfo = JsonConvert.DeserializeObject<LoginResponse>(loginresult);
@@ -67,11 +68,9 @@ namespace JolTudomE_WP {
 
       if (DataSource.LoggedInInfo.RoleID == DataSource.GetRoleStudent().RoleID) {
         DataSource.SelectedUserInfo = DataSource.LoggedInInfo;
-        NavigationService.NavigateTo(PageEnum.SelectedUser);
       }
-      else {
-        NavigationService.NavigateTo(PageEnum.LoggedInUser);
-      }
+
+      postlogin();
 
     }
 
