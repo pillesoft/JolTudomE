@@ -1,4 +1,5 @@
-﻿using JolTudomE_WP.Model;
+﻿using JolTudomE_WP.Common;
+using JolTudomE_WP.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -100,17 +101,47 @@ namespace JolTudomE_WP.ViewModel {
       set { SetProperty<string>(ref _SelectedUser, value); }
     }
 
-    //private bool _ShowNewTestPivot;
-    //public bool ShowNewTestPivot {
-    //  get { return _ShowNewTestPivot; }
-    //  set { SetProperty<bool>(ref _ShowNewTestPivot, value); }
-    //}
+    private RelayCommand<Statistic> _ItemClickedCommand;
+    public RelayCommand<Statistic> ItemClickedCommand {
+      get {
+        return _ItemClickedCommand
+      ?? (_ItemClickedCommand = new RelayCommand<Statistic>(
+      (st) => {
+        int testid = st.TestID;
+        NavigationService.NavigateTo(PageEnum.TestDetail, testid);
+      },
+      (st) => true));
+      }
+    }
 
-    //private bool _ShowProfilPivot;
-    //public bool ShowProfilPivot {
-    //  get { return _ShowProfilPivot; }
-    //  set { SetProperty<bool>(ref _ShowProfilPivot, value); }
-    //}
+    private RelayCommand _StartTestCommand;
+    public RelayCommand StartTestCommand {
+      get {
+        return _StartTestCommand
+      ?? (_StartTestCommand = new RelayCommand(
+      () => {
+        NavigationService.NavigateTo(PageEnum.TestExecute, new NewTestParam { NumberOfQuestions = NumberQuestion, TopicIDs = SelectedTopics });
+      },
+      () => SelectedTopics.Count > 0));
+      }
+    }
+
+    private RelayCommand<List<int>> _SelectionChangedCommand;
+    public RelayCommand<List<int>> SelectionChangedCommand {
+      get {
+        return _SelectionChangedCommand
+      ?? (_SelectionChangedCommand = new RelayCommand<List<int>>(
+      (tidlist) => {
+        SelectedTopics = new List<int>();
+        foreach (int id in tidlist) {
+          SelectedTopics.Add(id);
+        }
+        IsTopicErrorShown = SelectedTopics.Count == 0;
+        StartTestCommand.RaiseCanExecuteChanged();
+      },
+      (tidlist) => true));
+      }
+    }
 
     public SelectedUserViewModel() {
 
@@ -133,9 +164,6 @@ namespace JolTudomE_WP.ViewModel {
       
       ProfilVM.LoadData(null);
       SelectedUser = DataSource.SelectedUserInfo.DisplayName;
-
-      //ShowNewTestPivot = DataSource.SelectedUserInfo.PersonID == DataSource.LoggedInInfo.PersonID;
-      //ShowProfilPivot = DataSource.SelectedUserInfo.RoleID == DataSource.GetRoleStudent().RoleID;
 
       StatisticList = await DataSource.GetStatistic();
       CourseList = await DataSource.GetCourses();

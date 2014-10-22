@@ -10,16 +10,20 @@ namespace JolTudomE_WP {
     Login,
     Register,
     SelectedUser,
-    LoggedInUser
+    LoggedInUser,
+    TestDetail,
+    TestExecute
   }
-  
+
   public static class NavigationService {
     private static Frame _RootFrame = Window.Current.Content as Frame;
     private static Dictionary<PageEnum, Type> _PageMapping = new Dictionary<PageEnum, Type>() {
       {PageEnum.Login, typeof(LoginPage)},
       {PageEnum.Register, typeof(RegisterPage)},
       {PageEnum.SelectedUser, typeof(SelectedUserPage)},
-      {PageEnum.LoggedInUser, typeof(LoggedInUserPage)}
+      {PageEnum.LoggedInUser, typeof(LoggedInUserPage)},
+      {PageEnum.TestDetail, typeof(TestDetailPage)},
+      {PageEnum.TestExecute, typeof(TestExecutePage)}
     };
 
     public static void NavigateTo(PageEnum page, object param) {

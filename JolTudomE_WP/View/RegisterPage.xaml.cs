@@ -79,28 +79,5 @@ namespace JolTudomE_WP.View {
 
     #endregion
 
-    //private async void cmdRegister_Click(object sender, RoutedEventArgs e) {
-    //  RegisterViewModel vm = DataContext as RegisterViewModel;
-    //  if (!vm.NewUser.IsValid) {
-    //    ShowDialog("Regisztrálási Hiba", "A beviteli mezők adatai hibásak!");
-    //  }
-    //  else {
-    //    prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
-    //    try {
-    //      await DataSource.MakeRegister(vm.NewUser);
-    //      ShowDialog("Regisztráció", "A regisztráció sikerült!");
-    //      Frame.Navigate(typeof(LoginPage));
-    //    }
-    //    catch (ApiModelException mexc) {
-    //      prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-    //      ShowDialog("Regisztrálási Hiba", mexc.Message);
-    //    }
-    //    catch (Exception exc) {
-    //      prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-    //      ShowDialog("Regisztrálási Hiba", exc.Message);
-    //    }
-    //  }
-    //}
-
   }
 }

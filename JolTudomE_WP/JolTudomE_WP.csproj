@@ -92,6 +92,7 @@
     <Compile Include="DataSource.cs" />
     <Compile Include="Helper\BoolToTestDetImageSourceConverter.cs" />
     <Compile Include="Helper\BoolToNegateConverter.cs" />
+    <Compile Include="Helper\TopicSelectionChangedConverter.cs" />
     <Compile Include="Helper\ItemClickConverter.cs" />
     <Compile Include="Helper\BoolToVisibilityConverter.cs" />
     <Compile Include="Helper\ErrorMessageToVisibilityConverter.cs" />

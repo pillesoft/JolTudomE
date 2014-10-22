@@ -32,9 +32,6 @@ namespace JolTudomE_WP.View {
       this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
       this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-      txtUserName.Text = "admin2";
-      txtPassword.Password = "12345678";
-
     }
 
     /// <summary>
@@ -103,33 +100,16 @@ namespace JolTudomE_WP.View {
     private async void cmdLogin_Click(object sender, RoutedEventArgs e) {
       prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
       try {
-        bool loginres = await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password);
-        if (DataSource.LoggedInInfo.RoleID == DataSource.GetRoleStudent().RoleID) {
-          DataSource.SelectedUserInfo = DataSource.LoggedInInfo;
-          NavigationService.NavigateTo(PageEnum.SelectedUser);
-        }
-        else {
-          NavigationService.NavigateTo(PageEnum.LoggedInUser);
-        }
+        await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password);
       }
       catch (UnauthorizedException) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        ShowLoginError("Rossz Felhasználó név vagy Jelszó!");
+        ((App)App.Current).ShowDialog("Bejelentkezési Hiba", "Rossz Felhasználó név vagy Jelszó!");
       }
       catch (Exception exc) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        ShowLoginError(exc.Message);
+        ((App)App.Current).ShowDialog("Bejelentkezési Hiba", exc.Message);
       }
-    }
-
-    private async void ShowLoginError(string msg) {
-      ContentDialog errordialog = new ContentDialog() {
-        Title = "Bejelentkezési Hiba",
-        Content = msg,
-        PrimaryButtonText = "Ok"
-      };
-
-      await errordialog.ShowAsync();
     }
 
     private void cmdRegister_Click(object sender, RoutedEventArgs e) {

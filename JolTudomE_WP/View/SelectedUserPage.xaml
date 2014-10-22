@@ -12,6 +12,8 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   <Page.Resources>
     <helper:ErrorMessageToVisibilityConverter x:Key="ErrorMessageToVisibilityConverter"/>
+    <helper:ItemClickConverter x:Key="ItemClickConverter" />
+    <helper:TopicSelectionChangedConverter x:Key="TopicSelectionChangedConverter" />
     <DataTemplate x:Key="StatisticListDataTemplate">
       <Grid Margin="3">
         <Grid.ColumnDefinitions>
@@ -302,7 +304,16 @@
               <SolidColorBrush Color="{ThemeResource TextBoxPlaceholderColor}"/>
             </TextBlock.Foreground>
           </TextBlock>
-          <ListView x:Name="lvStatistic" ItemsSource="{Binding StatisticList}" ItemTemplate="{StaticResource StatisticListDataTemplate}" ItemClick="lvStatistic_ItemClick" IsItemClickEnabled="True"/>
+          <ListView x:Name="lvStatistic" ItemsSource="{Binding StatisticList}"
+                    ItemTemplate="{StaticResource StatisticListDataTemplate}"
+                    IsItemClickEnabled="True">
+            <Interactivity:Interaction.Behaviors>
+              <Core:EventTriggerBehavior EventName="ItemClick">
+                <Core:InvokeCommandAction Command="{Binding ItemClickedCommand, Mode=OneWay}"
+                                        InputConverter="{StaticResource ItemClickConverter}"/>
+              </Core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+          </ListView>
         </Grid>
       </PivotItem>
       <PivotItem x:Name="NewTestPivotItem" Header="Új Teszt">
@@ -345,10 +356,18 @@
             <StackPanel Grid.Row="2">
               <ListView x:Name="lvTopic" Header="Témakör:" ItemsSource="{Binding TopicList}" SelectionMode="Multiple" ItemTemplate="{StaticResource TopicListDataTemplate}"
 								ItemContainerStyle="{StaticResource ListViewItemStyle}"
-								HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="200" Margin="0,10,0,0" SelectionChanged="lvTopic_SelectionChanged" />
+								HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="200" Margin="0,10,0,0" >
+                <Interactivity:Interaction.Behaviors>
+                  <Core:EventTriggerBehavior EventName="SelectionChanged">
+                    <Core:InvokeCommandAction Command="{Binding SelectionChangedCommand, Mode=OneWay}"
+                                        InputConverter="{StaticResource TopicSelectionChangedConverter}"
+                                              InputConverterParameter="{Binding ElementName=lvTopic}"/>
+                  </Core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+              </ListView>
               <TextBlock Text="Válassz ki legalább egy Témakört!" Foreground="Red" FontWeight="Bold" FontSize="20" Margin="2" Visibility="{Binding IsTopicErrorShown, Converter={StaticResource BoolToVisibilityConverter}}" />
             </StackPanel>
-            <Button x:Name="cmdStartTest" Content="Teszt Indítása" Click="cmdStartTest_Click" 
+            <Button x:Name="cmdStartTest" Content="Teszt Indítása" Command="{Binding StartTestCommand}" 
 							Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
           </Grid>
         </ScrollViewer>

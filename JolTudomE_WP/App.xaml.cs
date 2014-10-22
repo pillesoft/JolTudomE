@@ -7,16 +7,22 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using System;
+using Windows.Storage;
+using Windows.Security.Credentials;
 
 // The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
 namespace JolTudomE_WP {
+  
   /// <summary>
   /// Provides application-specific behavior to supplement the default Application class.
   /// </summary>
   public sealed partial class App : Application {
     private TransitionCollection transitions;
     private bool IsDialogOpen;
+    private ApplicationDataContainer _LocalSettings = null;
+
+    private const string _CredLockerResource = "JolTudomE";
 
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
@@ -26,6 +32,8 @@ namespace JolTudomE_WP {
       this.InitializeComponent();
       this.Suspending += this.OnSuspending;
       this.Resuming += this.OnResuming;
+
+      _LocalSettings = ApplicationData.Current.LocalSettings;
     }
 
     /// <summary>
@@ -85,16 +93,36 @@ namespace JolTudomE_WP {
         // When the navigation stack isn't restored navigate to the first page,
         // configuring the new page by passing required information as a navigation
         // parameter.
-        NavigationService.NavigateTo(PageEnum.Login);
-        //rootFrame.Navigate(typeof(LoginPage));
 
-        //if (!rootFrame.Navigate(typeof(MainPage), e.Arguments)) {
-        //  throw new Exception("Failed to create initial page");
-        //}
+        Authenticate();
+
       }
 
       // Ensure the current window is active.
       Window.Current.Activate();
+    }
+
+    private async void Authenticate() {
+      PasswordCredential cred = GetCredential();
+      if (cred == null) {
+        NavigationService.NavigateTo(PageEnum.Login);
+      }
+      else {
+        cred.RetrievePassword();
+        try {
+          await DataSource.MakeLogin(cred.UserName, cred.Password);
+        }
+        catch (UnauthorizedException) {
+          ShowDialog("Bejelentkezési Hiba", "A letárolt Felhasználó név/Jelszó már nem megfelelő!");
+          NavigationService.NavigateTo(PageEnum.Login);
+        }
+        catch (Exception exc) {
+          ShowDialog("Bejelentkezési Hiba", exc.Message);
+          NavigationService.NavigateTo(PageEnum.Login);
+        }
+
+      }
+
     }
 
     /// <summary>
@@ -131,7 +159,7 @@ namespace JolTudomE_WP {
 
         ContentDialog dialog = new ContentDialog() {
           Title = "Lejárt a Session!",
-          Content = "Az éppen aktuális munkamenet lejárt.\nLépjen be újra!",
+          Content = "Az éppen aktuális munkamenet lejárt!\nÚjra be kell jelentkezni ...",
           PrimaryButtonText = "Ok",
         };
 
@@ -139,19 +167,40 @@ namespace JolTudomE_WP {
         Frame rootFrame = Window.Current.Content as Frame;
         rootFrame.BackStack.Clear();
         IsDialogOpen = false;
-        rootFrame.Navigate(typeof(LoginPage));
+
+        Authenticate();
       }
     }
 
     public async void ShowDialog(string title, string msg) {
+      TextBlock msgbox = new TextBlock();
+      msgbox.Text = msg;
+      msgbox.TextWrapping = TextWrapping.WrapWholeWords;
+
       ContentDialog errordialog = new ContentDialog() {
         Title = title,
-        Content = msg,
+        Content = msgbox,
         PrimaryButtonText = "Ok"
       };
 
       await errordialog.ShowAsync();
     }
 
+    public void SaveCredential(string username, string password) {
+      PasswordVault vault = new PasswordVault();
+      PasswordCredential cred = new PasswordCredential(_CredLockerResource, username, password);
+      vault.Add(cred);
+    }
+
+    private PasswordCredential GetCredential() {
+      PasswordVault vault = new PasswordVault();
+      PasswordCredential cred = null;
+      try {
+        var credcoll = vault.FindAllByResource(_CredLockerResource);
+        cred = credcoll[0];
+      }
+      catch (Exception) { }
+      return cred;
+    }
   }
 }

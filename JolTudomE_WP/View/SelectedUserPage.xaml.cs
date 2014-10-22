@@ -16,7 +16,6 @@ namespace JolTudomE_WP.View {
   /// </summary>
   public sealed partial class SelectedUserPage : Page {
     private NavigationHelper navigationHelper;
-    private SelectedUserViewModel _ViewModel;
 
     public SelectedUserPage() {
       this.InitializeComponent();
@@ -25,7 +24,6 @@ namespace JolTudomE_WP.View {
       this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
       this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
       
-      _ViewModel = (SelectedUserViewModel)this.DataContext;
     }
 
     /// <summary>
@@ -105,29 +103,6 @@ namespace JolTudomE_WP.View {
     }
 
     #endregion
-
-    private void lvStatistic_ItemClick(object sender, ItemClickEventArgs e) {
-      int testid = ((JolTudomE_WP.Model.Statistic)e.ClickedItem).TestID;
-      Frame.Navigate(typeof(TestDetailPage), testid);
-    }
-
-    private void cmdStartTest_Click(object sender, RoutedEventArgs e) {
-      if (_ViewModel.SelectedTopics.Count > 0) {
-        Frame.Navigate(typeof(TestExecutePage), new NewTestParam { NumberOfQuestions = _ViewModel.NumberQuestion, TopicIDs = _ViewModel.SelectedTopics });
-      }
-      else {
-        _ViewModel.IsTopicErrorShown = true;
-      }
-    }
-
-    private void lvTopic_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-      _ViewModel.SelectedTopics = new List<int>();
-      foreach(Topic t in lvTopic.SelectedItems) {
-        _ViewModel.SelectedTopics.Add(t.TopicID);
-      }
-      _ViewModel.IsTopicErrorShown = _ViewModel.SelectedTopics.Count == 0;
-    }
-
 
   }
 }
