@@ -7,76 +7,37 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JolTudomE_WP.ViewModel {
-  public class ProfilViewModel : BaseNotifyable, IViewModel {
+  public class ProfilViewModel : BaseNotifyable {
 
     private UserDetail _UserProfil;
-
     public UserDetail UserProfil {
       get { return _UserProfil; }
       set {
         SetProperty<UserDetail>(ref _UserProfil, value);
+        ShowProgressBar = false;
       }
     }
 
-    private bool _IsProfilInEditMode;
-
-    public bool IsProfilInEditMode {
-      get { return _IsProfilInEditMode; }
-      set { SetProperty<bool>(ref _IsProfilInEditMode, value); }
+    private bool _ShowProgressBar;
+    public bool ShowProgressBar {
+      get { return _ShowProgressBar; }
+      set { SetProperty<bool>(ref _ShowProgressBar, value); }
     }
 
-    private RelayCommand _EditCommand;
-
-    public RelayCommand EditCommand {
+    private RelayCommand _LoadData;
+    public RelayCommand LoadData {
       get {
-        if (_EditCommand == null) {
-          _EditCommand = new RelayCommand(
-              () => IsProfilInEditMode = true,
-              () => true);
-        }
-
-        return _EditCommand; 
+        return _LoadData
+      ?? (_LoadData = new RelayCommand(
+      async () => {
+        ShowProgressBar = true;
+        UserProfil = await DataSource.GetLoginDetail();
+      },
+      () => true));
       }
-      set { _EditCommand = value; }
     }
 
-    private RelayCommand _SaveCommand;
+    public ProfilViewModel() { }
 
-    public RelayCommand SaveCommand {
-      get {
-        if (_SaveCommand == null) {
-          _SaveCommand = new RelayCommand(
-              () => IsProfilInEditMode = false,
-              () => true);
-        }
-
-        return _SaveCommand;
-      }
-      set { _SaveCommand = value; }
-    }
-
-    private RelayCommand _CancelCommand;
-
-    public RelayCommand CancelCommand {
-      get {
-        if (_CancelCommand == null) {
-          _CancelCommand = new RelayCommand(
-              () => IsProfilInEditMode = false,
-              () => true);
-        }
-
-        return _CancelCommand;
-      }
-      set { _CancelCommand = value; }
-    }
-
-    public ProfilViewModel() {
-      IsProfilInEditMode = false;
-
-    }
-
-    public async void LoadData(object customdata) {
-      UserProfil = await DataSource.GetLoginDetail();
-    }
   }
 }

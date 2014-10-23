@@ -14,17 +14,7 @@ namespace JolTudomE_WP.ViewModel {
       get { return _ShowProgressBar; }
       set { SetProperty<bool>(ref _ShowProgressBar, value); }
     }
-
-
-    private int _CurrentPivotItem;
-    public int CurrentPivotItem {
-      get { return _CurrentPivotItem; }
-      set {
-        SetProperty<int>(ref _CurrentPivotItem, value);
-        IsProfilButtonsShown = _CurrentPivotItem == 1;
-      }
-    }
-
+    
     private List<GroupedUser> _UserList;
     public List<GroupedUser> UserList {
       get { return _UserList; }
@@ -55,21 +45,6 @@ namespace JolTudomE_WP.ViewModel {
       }
     }
 
-
-    private ProfilViewModel _ProfilVM;
-    public ProfilViewModel ProfilVM {
-      get { return _ProfilVM; }
-      set {
-        SetProperty<ProfilViewModel>(ref _ProfilVM, value);  
-      }
-    }
-
-    private bool _IsProfilButtonsShown;
-    public bool IsProfilButtonsShown {
-      get { return _IsProfilButtonsShown; }
-      set { SetProperty<bool>(ref _IsProfilButtonsShown, value); }
-    }
-
     private CollectionViewSource _UserListGrouped;
     public CollectionViewSource UserListGrouped {
       get { return _UserListGrouped; }
@@ -81,14 +56,12 @@ namespace JolTudomE_WP.ViewModel {
       UserListGrouped = new CollectionViewSource();
       UserListGrouped.IsSourceGrouped = true;
 
-      ProfilVM = new ProfilViewModel();
     }
 
     public async void LoadData(object customdata) {
       ShowProgressBar = true;
 
       UserList = await DataSource.GetUserList();
-      ProfilVM.LoadData(null);
 
       ShowProgressBar = false;
     }

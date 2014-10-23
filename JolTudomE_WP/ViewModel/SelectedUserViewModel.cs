@@ -14,24 +14,6 @@ namespace JolTudomE_WP.ViewModel {
       set { SetProperty<bool>(ref _ShowProgressBar, value); }
     }
 
-
-    private int _CurrentPivotItem;
-    public int CurrentPivotItem {
-      get { return _CurrentPivotItem; }
-      set {
-        SetProperty<int>(ref _CurrentPivotItem, value);
-        IsProfilButtonsShown = _CurrentPivotItem == 2;
-      }
-    }
-
-    private ProfilViewModel _ProfilVM;
-    public ProfilViewModel ProfilVM {
-      get { return _ProfilVM; }
-      set {
-        SetProperty<ProfilViewModel>(ref _ProfilVM, value);  
-      }
-    }
-
     private List<Statistic> _StatisticList;
     public List<Statistic> StatisticList {
       get { return _StatisticList; }
@@ -89,12 +71,6 @@ namespace JolTudomE_WP.ViewModel {
       set { SetProperty<bool>(ref _IsTopicErrorShown, value); }
     }
 
-    private bool _IsProfilButtonsShown;
-    public bool IsProfilButtonsShown {
-      get { return _IsProfilButtonsShown; }
-      set { SetProperty<bool>(ref _IsProfilButtonsShown, value); }
-    }
-
     private string _SelectedUser;
     public string SelectedUser {
       get { return _SelectedUser; }
@@ -149,7 +125,6 @@ namespace JolTudomE_WP.ViewModel {
       NumberQuestion = 15;
       IsTopicErrorShown = false;
       SelectedUser = "Belépett Felhasználó";
-      ProfilVM = new ProfilViewModel();
 
     }
 
@@ -163,7 +138,6 @@ namespace JolTudomE_WP.ViewModel {
     public async void LoadData(object customdata) {
       ShowProgressBar = true;
       
-      ProfilVM.LoadData(null);
       SelectedUser = DataSource.SelectedUserInfo.DisplayName;
 
       StatisticList = await DataSource.GetStatistic();

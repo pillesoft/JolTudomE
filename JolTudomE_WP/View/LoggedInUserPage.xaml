@@ -15,9 +15,9 @@
     <helper:ItemClickConverter x:Key="ItemClickConverter" />
     <CollectionViewSource x:Name="UserListCVS" IsSourceGrouped="True"/>
     <DataTemplate x:Key="UserListDataTemplate">
-    	<StackPanel Margin="3">
-    		<TextBlock Text="{Binding DisplayName}" FontSize="25" FontWeight="Bold" />
-    	</StackPanel>
+      <StackPanel Margin="3">
+        <TextBlock Text="{Binding DisplayName}" FontSize="25" FontWeight="Bold" />
+      </StackPanel>
     </DataTemplate>
     <local:ListGroupStyleSelector x:Key="listGroupStyleSelector"/>
 
@@ -25,53 +25,36 @@
   <Page.DataContext>
     <vm:LoggedInUserViewModel />
   </Page.DataContext>
-	<Grid x:Name="LayoutRoot">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition />
-		</Grid.RowDefinitions>
-		<Grid.ChildrenTransitions>
-			<TransitionCollection>
-				<EntranceThemeTransition/>
-			</TransitionCollection>
-		</Grid.ChildrenTransitions>
+  <Grid x:Name="LayoutRoot">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Grid.ChildrenTransitions>
+      <TransitionCollection>
+        <EntranceThemeTransition/>
+      </TransitionCollection>
+    </Grid.ChildrenTransitions>
 
-		<ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
-		<Pivot Title="Jól Tudom E?" SelectedIndex="{Binding CurrentPivotItem, Mode=TwoWay}" Grid.Row="1">
-			<PivotItem Header="Felhasználók">
-				<ListView x:Name="UserListView" ItemsSource="{Binding UserListGrouped.View}"
+    <ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
+    <Pivot Title="Jól Tudom E?" Grid.Row="1">
+      <PivotItem Header="Felhasználók">
+        <ListView x:Name="UserListView" ItemsSource="{Binding UserListGrouped.View}"
 					ItemTemplate="{StaticResource UserListDataTemplate}"
                   IsItemClickEnabled="True"
 					GroupStyleSelector="{StaticResource listGroupStyleSelector}">
-					<Interactivity:Interaction.Behaviors>
-						<Core:EventTriggerBehavior EventName="ItemClick">
-							<Core:InvokeCommandAction Command="{Binding ItemClickedCommand, Mode=OneWay}"
+          <Interactivity:Interaction.Behaviors>
+            <Core:EventTriggerBehavior EventName="ItemClick">
+              <Core:InvokeCommandAction Command="{Binding ItemClickedCommand, Mode=OneWay}"
                                         InputConverter="{StaticResource ItemClickConverter}"/>
-						</Core:EventTriggerBehavior>
-					</Interactivity:Interaction.Behaviors>
-				</ListView>
+            </Core:EventTriggerBehavior>
+          </Interactivity:Interaction.Behaviors>
+        </ListView>
       </PivotItem>
-			<PivotItem Header="Profil" DataContext="{Binding ProfilVM}">
-				<ScrollViewer>
-					<StackPanel>
-						<TextBox Header="Felhasználó név" Text="{Binding UserProfil.UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                       />
-						<!--IsReadOnly="{Binding IsProfilInEditMode, Converter={StaticResource BoolToNegateConverter}, ConverterParameter=NOT}"-->
-						<TextBlock Text="{Binding UserProfil.Errors[UserName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2"
-                          />
-						<!--Visibility="{Binding UserProfil.Errors[UserName], Converter={StaticResource ErrorMessageToVisibilityConverter}}"-->
-						<TextBox Header="Előtag" Text="{Binding UserProfil.Prefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                       />
-						<!--IsReadOnly="{Binding IsProfilInEditMode, Converter={StaticResource BoolToNegateConverter}, ConverterParameter=NOT}"-->
-						<TextBox Header="Család név" Text="{Binding UserProfil.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-						<TextBlock Text="{Binding UserProfil.Errors[LastName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2" />
-						<TextBox Header="Középső név" Text="{Binding UserProfil.MiddleName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-						<TextBox Header="Kereszt név" Text="{Binding UserProfil.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-						<TextBlock Text="{Binding UserProfil.Errors[FirstName]}" Foreground="Red" FontSize="14" TextWrapping="WrapWholeWords" Margin="2" />
-					</StackPanel>
-				</ScrollViewer>
-			</PivotItem>
+      <PivotItem Header="Profil">
+        <local:ProfilUserControl />
+      </PivotItem>
 
-		</Pivot>
-	</Grid>
+    </Pivot>
+  </Grid>
 </Page>

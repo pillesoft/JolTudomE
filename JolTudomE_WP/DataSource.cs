@@ -141,6 +141,10 @@ namespace JolTudomE_WP {
       if (!IsAuthenticated) return null;
       var result = await _DataSource._WAM.GetLoginDetail();
       if (result != null) {
+        
+        // intentionally make delay to see if the progress bar is working
+        //await Task.Delay(TimeSpan.FromSeconds(20));
+
         var userdet = JsonConvert.DeserializeObject<UserDetail>(result);
         return userdet;
       }
