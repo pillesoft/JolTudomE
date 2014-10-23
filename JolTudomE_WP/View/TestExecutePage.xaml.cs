@@ -12,12 +12,14 @@ namespace JolTudomE_WP.View {
   /// An empty page that can be used on its own or navigated to within a Frame.
   /// </summary>
   public sealed partial class TestExecutePage : Page {
-    private TestExecutionNavigationHelper navigationHelper;
+//    private TestExecutionNavigationHelper navigationHelper;
+    private NavigationHelper navigationHelper;
 
     public TestExecutePage() {
       this.InitializeComponent();
 
-      this.navigationHelper = new TestExecutionNavigationHelper(this);
+//      this.navigationHelper = new TestExecutionNavigationHelper(this);
+      this.navigationHelper = new Common.NavigationHelper(this);
       this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
       this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
     }
@@ -25,7 +27,8 @@ namespace JolTudomE_WP.View {
     /// <summary>
     /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
     /// </summary>
-    public TestExecutionNavigationHelper NavigationHelper {
+//    public TestExecutionNavigationHelper NavigationHelper {
+    public NavigationHelper NavigationHelper {
       get { return this.navigationHelper; }
     }
 
@@ -41,7 +44,7 @@ namespace JolTudomE_WP.View {
     /// a dictionary of state preserved by this page during an earlier
     /// session.  The state will be null the first time a page is visited.</param>
     private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e) {
-      ((IViewModel)this.DataContext).LoadData(e.NavigationParameter);
+      ((IViewModel)this.DataContext).LoadData(null);
     }
 
     /// <summary>

@@ -301,5 +301,26 @@ namespace JolTudomE_WP {
 
     }
 
+    internal async Task SuspendTest(int testid) {
+      string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/suspend", testid);
+
+      try {
+        await DoRequest(fullurl);
+      }
+      catch {
+        throw;
+      }
+    }
+
+    internal async Task ResumeTest(int testid) {
+      string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/resume", testid);
+
+      try {
+        await DoRequest(fullurl);
+      }
+      catch {
+        throw;
+      }
+    }
   }
 }

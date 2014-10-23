@@ -120,7 +120,8 @@ namespace JolTudomE_WP.ViewModel {
         return _StartTestCommand
       ?? (_StartTestCommand = new RelayCommand(
       () => {
-        NavigationService.NavigateTo(PageEnum.TestExecute, new NewTestParam { NumberOfQuestions = NumberQuestion, TopicIDs = SelectedTopics });
+        DataSource.AddNewTestParam(new NewTestParam { NumberOfQuestions = NumberQuestion, TopicIDs = SelectedTopics });
+        NavigationService.NavigateTo(PageEnum.TestExecute);
       },
       () => SelectedTopics.Count > 0));
       }

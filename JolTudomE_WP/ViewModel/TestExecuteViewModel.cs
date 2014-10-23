@@ -107,10 +107,12 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     public async void LoadData(object customdata) {
-      NewTestParam p = (NewTestParam)customdata;
-
-      var result = await DataSource.GenerateTest(p.NumberOfQuestions, p.TopicIDs);
-      NewTest = result;
+      //NewTestParam p = (NewTestParam)customdata;
+      try {
+        var result = await DataSource.GenerateTest();
+        NewTest = result;
+      }
+      catch { }
 
     }
   }

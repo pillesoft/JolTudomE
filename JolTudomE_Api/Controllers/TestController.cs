@@ -163,5 +163,34 @@ namespace JolTudomE_Api.Controllers {
       return Ok();
     }
 
+
+    [Route("suspend/{testid}")]
+    [HttpGet]
+    public IHttpActionResult SuspendEvent(int testid) {
+      var id = (CustomIdentity)User.Identity;
+      try {
+        DBContext.usp_AddEvent(testid, 1);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        throw ece_exc.InnerException;
+      }
+      return Ok();
+    }
+
+    [Route("resume/{testid}")]
+    [HttpGet]
+    public IHttpActionResult ResumeEvent(int testid) {
+      var id = (CustomIdentity)User.Identity;
+      try {
+        DBContext.usp_AddEvent(testid, 0);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        throw ece_exc.InnerException;
+      }
+      return Ok();
+    }
+
   }
 }

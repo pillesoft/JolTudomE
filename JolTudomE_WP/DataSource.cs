@@ -15,6 +15,8 @@ namespace JolTudomE_WP {
     private ObservableCollection<PersonRole> _Roles;
     private LoginResponse _LoggedInInfo;
     private LoginResponse _SelectedUserInfo;
+    private int? _CurrentTestID;
+    private NewTestParam _NewTestParam;
 
     public DataSource() {
       _WAM = new WebAPIManager();
@@ -37,15 +39,31 @@ namespace JolTudomE_WP {
       set { _DataSource._SelectedUserInfo = value; }
     }
 
+    internal static int? CurrentTest {
+      get {
+        return _DataSource._CurrentTestID;
+      }
+    }
+
+    internal static bool HasCurrentTest {
+      get {
+        return _DataSource._CurrentTestID != null;
+      }
+    }
+
+    internal static void AddNewTestParam(NewTestParam param) {
+      _DataSource._NewTestParam = param;
+    }
+
     internal static ObservableCollection<PersonRole> GetRoles() {
       return _DataSource._Roles; 
     }
 
     internal static PersonRole GetRoleByName(string name) {
-      return _DataSource._Roles.FirstOrDefault(r => r.Role == name);
+      return GetRoles().FirstOrDefault(r => r.Role == name);
     }
     internal static PersonRole GetRoleById(int id) {
-      return _DataSource._Roles.FirstOrDefault(r => r.RoleID == id);
+      return GetRoles().FirstOrDefault(r => r.RoleID == id);
     }
     internal static PersonRole GetRoleStudent() {
       return GetRoleById(1);
@@ -169,12 +187,15 @@ namespace JolTudomE_WP {
       return topiclist;
     }
 
-    internal async static Task<NewTest> GenerateTest(int count, List<int> topicids) {
+    internal async static Task<NewTest> GenerateTest() {
       if (!IsAuthenticated) return null;
-      var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, count, topicids);
+//      var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, count, topicids);
+      var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, _DataSource._NewTestParam.NumberOfQuestions, _DataSource._NewTestParam.TopicIDs);
       if (result == null) return null;
 
       var newtest = JsonConvert.DeserializeObject<NewTest>(result);
+      _DataSource._CurrentTestID = newtest.TestID;
+
       return newtest;
     }
 
@@ -184,13 +205,29 @@ namespace JolTudomE_WP {
     }
 
     internal async static Task CompleteTest(int testid, int questionid, int answerid) {
-      if (IsAuthenticated) 
+      if (IsAuthenticated) {
         await _DataSource._WAM.CompleteTest(testid, questionid, answerid);
+        _DataSource._CurrentTestID = null;
+      }
     }
 
     internal async static Task CancelTest(int testid) {
-      if (IsAuthenticated)
+      if (IsAuthenticated) {
         await _DataSource._WAM.CancelTest(testid, _DataSource._LoggedInInfo.PersonID);
+        _DataSource._CurrentTestID = null;
+      }
+    }
+
+    internal async static Task SuspendTest() {
+      if (IsAuthenticated) {
+        await _DataSource._WAM.SuspendTest((int)_DataSource._CurrentTestID);
+      }
+    }
+
+    internal async static Task ResumeTest() {
+      if (IsAuthenticated) {
+        await _DataSource._WAM.ResumeTest((int)_DataSource._CurrentTestID);
+      }
     }
 
   }

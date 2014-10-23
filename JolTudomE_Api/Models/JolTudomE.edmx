@@ -44,6 +44,10 @@
         <Function Name="usp_GetTopics" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="course">
           <Parameter Name="courseid" Type="int" Mode="In" />
         </Function>
+        <Function Name="usp_AddEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="mobile">
+          <Parameter Name="testid" Type="int" Mode="In" />
+          <Parameter Name="eventid" Type="tinyint" Mode="In" />
+        </Function>
         <Function Name="usp_CancelTest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="test">
           <Parameter Name="testid" Type="int" Mode="In" />
           <Parameter Name="person" Type="int" Mode="In" />
@@ -170,6 +174,10 @@
           <FunctionImport Name="usp_GetAllUsers" ReturnType="Collection(JolTudomEModel.usp_GetAllUsers_Result)">
             <Parameter Name="roleid" Mode="In" Type="Int32" />
             <Parameter Name="sroleid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_AddEvent">
+            <Parameter Name="testid" Mode="In" Type="Int32" />
+            <Parameter Name="eventid" Mode="In" Type="Byte" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="usp_Authenticate_Result">
@@ -369,6 +377,7 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_AddEvent" FunctionName="JolTudomEModel.Store.usp_AddEvent" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

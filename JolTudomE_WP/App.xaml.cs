@@ -10,6 +10,7 @@ using System;
 using Windows.Storage;
 using Windows.Security.Credentials;
 using System.Threading.Tasks;
+using JolTudomE_WP.Model;
 
 // The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -35,6 +36,8 @@ namespace JolTudomE_WP {
       this.Resuming += this.OnResuming;
 
       _LocalSettings = ApplicationData.Current.LocalSettings;
+      
+      SuspensionManager.KnownTypes.Add(typeof(NewTestParam));
     }
 
     /// <summary>
@@ -81,6 +84,9 @@ namespace JolTudomE_WP {
             // and if the previous login attempt succeeded
             try {
               await SuspensionManager.RestoreAsync();
+              //var id = SuspensionManager.SessionState["testid"];
+
+              string sa = "sdfg";
             }
             catch (SuspensionManagerException) {
               // Something went wrong restoring state.
@@ -168,16 +174,19 @@ namespace JolTudomE_WP {
     private async void OnSuspending(object sender, SuspendingEventArgs e) {
       var deferral = e.SuspendingOperation.GetDeferral();
 
-
+      if (DataSource.HasCurrentTest) {
+        SuspensionManager.SessionState["CurrentTestID"] = (int)DataSource.CurrentTest;
+        await DataSource.SuspendTest();
+      }
 
       await SuspensionManager.SaveAsync();
       deferral.Complete();
     }
 
-    void OnResuming(object sender, object e) {
-      //var deferral = e.SuspendingOperation.GetDeferral();
-      //await SuspensionManager.RestoreAsync();
-      //deferral.Complete();
+    async void OnResuming(object sender, object e) {
+      if (DataSource.HasCurrentTest) {
+        await DataSource.ResumeTest();
+      }
     }
 
     public async void SessionExpired() {
@@ -217,10 +226,13 @@ namespace JolTudomE_WP {
       PasswordVault vault = new PasswordVault();
       
       // remove the already saved credentials
-      var credcoll = vault.FindAllByResource(_CredLockerResource);
-      foreach (var item in credcoll) {
-        vault.Remove(item);
+      try {
+        var credcoll = vault.FindAllByResource(_CredLockerResource);
+        foreach (var item in credcoll) {
+          vault.Remove(item);
+        }
       }
+      catch { /* that means there is no saved credential */}
 
       // save the new credential
       PasswordCredential cred = new PasswordCredential(_CredLockerResource, username, password);
