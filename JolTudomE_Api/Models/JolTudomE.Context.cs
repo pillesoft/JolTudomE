@@ -222,7 +222,7 @@ namespace JolTudomE_Api.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_GetAllUsers_Result>("usp_GetAllUsers", roleidParameter, sroleidParameter);
         }
     
-        public virtual int usp_AddEvent(Nullable<int> testid, Nullable<byte> eventid)
+        public virtual int usp_AddEvent(Nullable<int> testid, Nullable<int> eventid)
         {
             var testidParameter = testid.HasValue ?
                 new ObjectParameter("testid", testid) :
@@ -230,9 +230,18 @@ namespace JolTudomE_Api.Models
     
             var eventidParameter = eventid.HasValue ?
                 new ObjectParameter("eventid", eventid) :
-                new ObjectParameter("eventid", typeof(byte));
+                new ObjectParameter("eventid", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_AddEvent", testidParameter, eventidParameter);
+        }
+    
+        public virtual ObjectResult<usp_ContineTest_Result> usp_ContineTest(Nullable<int> personid)
+        {
+            var personidParameter = personid.HasValue ?
+                new ObjectParameter("personid", personid) :
+                new ObjectParameter("personid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_ContineTest_Result>("usp_ContineTest", personidParameter);
         }
     }
 }

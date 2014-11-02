@@ -11,20 +11,22 @@ using Windows.Storage;
 using Windows.Security.Credentials;
 using System.Threading.Tasks;
 using JolTudomE_WP.Model;
+using LoggerWP;
 
 // The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
 namespace JolTudomE_WP {
-  
+
   /// <summary>
   /// Provides application-specific behavior to supplement the default Application class.
   /// </summary>
   public sealed partial class App : Application {
     private TransitionCollection transitions;
     private bool IsDialogOpen;
-    private ApplicationDataContainer _LocalSettings = null;
 
     private const string _CredLockerResource = "JolTudomE";
+
+    public static Logger LogIt;
 
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
@@ -34,10 +36,8 @@ namespace JolTudomE_WP {
       this.InitializeComponent();
       this.Suspending += this.OnSuspending;
       this.Resuming += this.OnResuming;
+      this.UnhandledException += App_UnhandledException;
 
-      _LocalSettings = ApplicationData.Current.LocalSettings;
-      
-      SuspensionManager.KnownTypes.Add(typeof(NewTestParam));
     }
 
     /// <summary>
@@ -53,6 +53,15 @@ namespace JolTudomE_WP {
       }
 #endif
 
+      LogIt = new Logger();
+      try {
+        await LogIt.Init("JolTudomE");
+      }
+      catch { }
+      if (!LogIt.IsReady) {
+        ShowDialog("Jól Tudom E?", "Az alkalmazás teljes értékű futtatásához kell SD kártya!");
+      } 
+
       Frame rootFrame = Window.Current.Content as Frame;
 
       // Do not repeat app initialization when the Window already has content,
@@ -64,10 +73,13 @@ namespace JolTudomE_WP {
         // Associate the frame with a SuspensionManager key.
         SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
+        SuspensionManager.KnownTypes.Add(typeof(LoginResponse));
+
         // TODO: Change this value to a cache size that is appropriate for your application.
         rootFrame.CacheSize = 1;
 
         if (e.PreviousExecutionState == ApplicationExecutionState.Terminated) {
+          LogIt.LogInfo("App-RestoreFromTerminate");
 
           // try to authenticate the user, who was in when the termination is occured
           PasswordCredential cred = GetCredential();
@@ -84,9 +96,6 @@ namespace JolTudomE_WP {
             // and if the previous login attempt succeeded
             try {
               await SuspensionManager.RestoreAsync();
-              //var id = SuspensionManager.SessionState["testid"];
-
-              string sa = "sdfg";
             }
             catch (SuspensionManagerException) {
               // Something went wrong restoring state.
@@ -133,7 +142,8 @@ namespace JolTudomE_WP {
         try {
           await DataSource.MakeLogin(cred.UserName, cred.Password,
             () => {
-              if (DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
+              if (DataSource.SelectedUserInfo != null 
+                && DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
                 NavigationService.NavigateTo(PageEnum.SelectedUser);
               }
               else {
@@ -143,7 +153,7 @@ namespace JolTudomE_WP {
 
         }
         catch (UnauthorizedException) {
-          ShowDialog("Bejelentkezési Hiba", "A letárolt Felhasználó név/Jelszó már nem megfelelő!");
+          ShowDialog("Bejelentkezési Hiba", "Az eltárolt Felhasználó név/Jelszó már nem megfelelő!");
           NavigationService.NavigateTo(PageEnum.Login);
         }
         catch (Exception exc) {
@@ -173,9 +183,11 @@ namespace JolTudomE_WP {
     /// <param name="e">Details about the suspend request.</param>
     private async void OnSuspending(object sender, SuspendingEventArgs e) {
       var deferral = e.SuspendingOperation.GetDeferral();
+      LogIt.LogInfo("App-Suspending");
 
       if (DataSource.HasCurrentTest) {
         SuspensionManager.SessionState["CurrentTestID"] = (int)DataSource.CurrentTest;
+        SuspensionManager.SessionState["SelectedUser"] = DataSource.SelectedUserInfo;
         await DataSource.SuspendTest();
       }
 
@@ -184,47 +196,49 @@ namespace JolTudomE_WP {
     }
 
     async void OnResuming(object sender, object e) {
+      LogIt.LogInfo("App-Resuming");
+
       if (DataSource.HasCurrentTest) {
         await DataSource.ResumeTest();
       }
     }
 
-    public async void SessionExpired() {
+    void App_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+      LogIt.LogError(string.Format("Unhandled Exception occured: {0}", e.Exception.ToString()));
+      e.Handled = true;
+      ShowDialog("Unhandled Exception", e.Message);
+    }
+
+    public void SessionExpired() {
       if (!IsDialogOpen) {
-        IsDialogOpen = true;
 
-        ContentDialog dialog = new ContentDialog() {
-          Title = "Lejárt a Session!",
-          Content = "Az éppen aktuális munkamenet lejárt!\nÚjra be kell jelentkezni ...",
-          PrimaryButtonText = "Ok",
-        };
+        ShowDialog("Lejárt a Session!", "Az éppen aktuális munkamenet lejárt! Újra be kell jelentkezni ...");
 
-        await dialog.ShowAsync();
         Frame rootFrame = Window.Current.Content as Frame;
         rootFrame.BackStack.Clear();
-        IsDialogOpen = false;
 
         Authenticate();
       }
     }
 
     public async void ShowDialog(string title, string msg) {
-      TextBlock msgbox = new TextBlock();
-      msgbox.Text = msg;
-      msgbox.TextWrapping = TextWrapping.WrapWholeWords;
+      if (!IsDialogOpen) {
+        IsDialogOpen = true;
 
-      ContentDialog errordialog = new ContentDialog() {
-        Title = title,
-        Content = msgbox,
-        PrimaryButtonText = "Ok"
-      };
+        WPDialog dialog = new WPDialog(msg) {
+          Title = title
+        };
+        await dialog.ShowAsync();
 
-      await errordialog.ShowAsync();
+        IsDialogOpen = false;
+      }
     }
+
+    #region Credential
 
     public void SaveCredential(string username, string password) {
       PasswordVault vault = new PasswordVault();
-      
+
       // remove the already saved credentials
       try {
         var credcoll = vault.FindAllByResource(_CredLockerResource);
@@ -249,5 +263,7 @@ namespace JolTudomE_WP {
       catch (Exception) { }
       return cred;
     }
+    #endregion
+
   }
 }

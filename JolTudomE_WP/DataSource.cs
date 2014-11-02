@@ -40,9 +40,8 @@ namespace JolTudomE_WP {
     }
 
     internal static int? CurrentTest {
-      get {
-        return _DataSource._CurrentTestID;
-      }
+      get { return _DataSource._CurrentTestID; }
+      set { _DataSource._CurrentTestID = value; }
     }
 
     internal static bool HasCurrentTest {
@@ -193,7 +192,6 @@ namespace JolTudomE_WP {
 
     internal async static Task<NewTest> GenerateTest() {
       if (!IsAuthenticated) return null;
-//      var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, count, topicids);
       var result = await _DataSource._WAM.StartNewTest(_DataSource._LoggedInInfo.PersonID, _DataSource._NewTestParam.NumberOfQuestions, _DataSource._NewTestParam.TopicIDs);
       if (result == null) return null;
 
@@ -232,6 +230,17 @@ namespace JolTudomE_WP {
       if (IsAuthenticated) {
         await _DataSource._WAM.ResumeTest((int)_DataSource._CurrentTestID);
       }
+    }
+
+    internal async static Task<NewTest> ContinueTest() {
+      if (!IsAuthenticated) return null;
+      var result = await _DataSource._WAM.ContinueTest(_DataSource._LoggedInInfo.PersonID);
+      if (result == null) return null;
+
+      var newtest = JsonConvert.DeserializeObject<NewTest>(result);
+      _DataSource._CurrentTestID = newtest.TestID;
+
+      return newtest;
     }
 
   }

@@ -46,7 +46,7 @@
         </Function>
         <Function Name="usp_AddEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="mobile">
           <Parameter Name="testid" Type="int" Mode="In" />
-          <Parameter Name="eventid" Type="tinyint" Mode="In" />
+          <Parameter Name="eventid" Type="int" Mode="In" />
         </Function>
         <Function Name="usp_CancelTest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="test">
           <Parameter Name="testid" Type="int" Mode="In" />
@@ -60,6 +60,9 @@
         </Function>
         <Function Name="usp_CleanupTests" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="test">
           <Parameter Name="timeout" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_ContineTest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="test">
+          <Parameter Name="personid" Type="int" Mode="In" />
         </Function>
         <Function Name="usp_Eval" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="test">
           <Parameter Name="testid" Type="int" Mode="In" />
@@ -177,7 +180,10 @@
           </FunctionImport>
           <FunctionImport Name="usp_AddEvent">
             <Parameter Name="testid" Mode="In" Type="Int32" />
-            <Parameter Name="eventid" Mode="In" Type="Byte" />
+            <Parameter Name="eventid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_ContineTest" ReturnType="Collection(JolTudomEModel.usp_ContineTest_Result)">
+            <Parameter Name="personid" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="usp_Authenticate_Result">
@@ -264,6 +270,14 @@
           <Property Type="String" Name="LastName" Nullable="false" MaxLength="25" />
           <Property Type="Int32" Name="PersonID" Nullable="false" />
           <Property Type="Int32" Name="RoleID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_ContineTest_Result">
+          <Property Type="Int32" Name="TestID" Nullable="false" />
+          <Property Type="Int32" Name="QuestionID" Nullable="false" />
+          <Property Type="String" Name="QuestionText" Nullable="false" MaxLength="255" />
+          <Property Type="Int32" Name="AnswerID" Nullable="true" />
+          <Property Type="String" Name="AnswerText" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="PersonID" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -378,6 +392,18 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="usp_AddEvent" FunctionName="JolTudomEModel.Store.usp_AddEvent" />
+          <FunctionImportMapping FunctionImportName="usp_ContineTest" FunctionName="JolTudomEModel.Store.usp_ContineTest">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="JolTudomEModel.usp_ContineTest_Result">
+                <ScalarProperty Name="TestID" ColumnName="TestID" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+                <ScalarProperty Name="AnswerID" ColumnName="AnswerID" />
+                <ScalarProperty Name="AnswerText" ColumnName="AnswerText" />
+                <ScalarProperty Name="PersonID" ColumnName="PersonID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

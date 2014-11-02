@@ -13,8 +13,8 @@ namespace JolTudomE_WP {
 
   class UnauthorizedException : Exception { }
   
-  class ApiModelException : Exception {
-    public ApiModelException(string apierror) : base(apierror) { }
+  class WebApiException : Exception {
+    public WebApiException(string apierror) : base(apierror) { }
   }
 
   class ApiModelError : Dictionary<string, List<string>> {
@@ -67,26 +67,42 @@ namespace JolTudomE_WP {
         return responseFromServer;
       }
       catch (WebException wexc) {
-        _Token = string.Empty;
-        DataSource.LoggedInInfo = null;
         if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.Unauthorized) {
           // that means the session is expired
+          _Token = string.Empty;
+          DataSource.LoggedInInfo = null;
           ((App)App.Current).SessionExpired();
           return null;
-          // throw new UnauthorizedException();
         }
         else if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.InternalServerError) {
           string modelerrors = GetResponse((HttpWebResponse)wexc.Response);
-          var errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
-          throw new ApiModelException(ExceptionHandler.GetUserFriendlyErrorMessage(errdetails["ExceptionMessage"]));
+          Dictionary<string, string> errdetails = new Dictionary<string,string>();
+          try {
+            errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
+          }
+          catch {
+          // write the message to the Log, because maybe the deserialization will be failed
+            App.LogIt.LogError(string.Format("Response Internal Server Deserialization Error-{0}\n{1}", url, modelerrors));
+            ((App)App.Current).ShowDialog("Jól Tudom E - Hiba", "Nem várt hiba történt! Hívja a fejlesztőt!");
+          }
+          string errmess = ExceptionHandler.GetUserFriendlyErrorMessage(errdetails);
+          App.LogIt.LogError(string.Format("Response DB Error-{0}\n{1}", url, errmess));
+          ((App)App.Current).ShowDialog("Adatbázis Hiba", wexc.Message);
+          return null;
         }
-        else throw;
+        else {
+          App.LogIt.LogError(string.Format("Response Unhandled Error-{0}\n{1}", url, wexc.ToString()));
+          ((App)App.Current).ShowDialog("Nem várt Hiba", wexc.Message);
+          return null;
+        }
       }
 
     }
 
     internal async Task<string> Login(string username, string password) {
       string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/login");
+      App.LogIt.LogInfo(string.Format("Login-{0}-{1}", fullurl, username));
+
       HttpWebRequest request = (HttpWebRequest)WebRequest.Create(fullurl);
 
       request.Method = "POST";
@@ -160,12 +176,22 @@ namespace JolTudomE_WP {
             }
             apierr.Add(field.Key, errmesslist);
           }
-          throw new ApiModelException(apierr.FormattedError);
+          throw new WebApiException(apierr.FormattedError);
         }
         else if (((HttpWebResponse)wexc.Response).StatusCode == HttpStatusCode.InternalServerError) {
           string modelerrors = GetResponse((HttpWebResponse)wexc.Response);
-          var errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
-          throw new ApiModelException(ExceptionHandler.GetUserFriendlyErrorMessage(errdetails["ExceptionMessage"]));
+          Dictionary<string, string> errdetails = new Dictionary<string, string>();
+          try {
+            errdetails = JsonConvert.DeserializeObject<Dictionary<string, string>>(modelerrors);
+          }
+          catch {
+            // write the message to the Log, because maybe the deserialization will be failed
+            App.LogIt.LogError(string.Format("Register Internal Server Deserialization Error\n{0}", modelerrors));
+            ((App)App.Current).ShowDialog("Jól Tudom E - Hiba", "Nem várt hiba történt! Hívja a fejlesztőt!");
+          }
+          string errmess = ExceptionHandler.GetUserFriendlyErrorMessage(errdetails);
+          App.LogIt.LogError(string.Format("Register DB Error\n{0}", errmess));
+          throw new WebApiException(errmess);
         }
         else throw;
       }
@@ -174,6 +200,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> GetLoginDetail() {
       string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/detail");
+      App.LogIt.LogInfo(string.Format("GetLoginDetail-{0}", fullurl));
       string response = string.Empty;
       try {
         response = await DoRequest(fullurl);
@@ -192,6 +219,7 @@ namespace JolTudomE_WP {
       else {
         fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/account/searchbyrole/roletosearch");
       }
+      App.LogIt.LogInfo(string.Format("GetUserList-{0}", fullurl));
       string response = string.Empty;
       try {
         response = await DoRequest(fullurl);
@@ -204,6 +232,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> GetStatistics(int personid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/statistic", personid);
+      App.LogIt.LogInfo(string.Format("GetStatistics-{0}", fullurl));
 
       string response = string.Empty;
       try {
@@ -217,6 +246,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> GetTestDetails(int testid, int personid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/detail", testid, personid);
+      App.LogIt.LogInfo(string.Format("GetTestDetails-{0}", fullurl));
 
       string response = string.Empty;
       try {
@@ -230,6 +260,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> GetCourses() {
       string fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/course/courses");
+      App.LogIt.LogInfo(string.Format("GetCourses-{0}", fullurl));
 
       string response = string.Empty;
       try {
@@ -243,6 +274,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> GetTopics(int courseid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/course/topic", courseid);
+      App.LogIt.LogInfo(string.Format("GetTopics-{0}", fullurl));
 
       string response = string.Empty;
       try {
@@ -256,6 +288,7 @@ namespace JolTudomE_WP {
 
     internal async Task<string> StartNewTest(int personid, int count, List<int> topicids) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/start", personid, count, string.Join(",", topicids));
+      App.LogIt.LogInfo(string.Format("StartNewTest-{0}", fullurl));
 
       string response = string.Empty;
       try {
@@ -269,6 +302,7 @@ namespace JolTudomE_WP {
 
     internal async Task AnswerTest(int testid, int questionid, int answerid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/answer", testid, questionid, answerid);
+      App.LogIt.LogInfo(string.Format("AnswerTest-{0}", fullurl));
 
       try {
         await DoRequest(fullurl);
@@ -280,6 +314,7 @@ namespace JolTudomE_WP {
 
     internal async Task CompleteTest(int testid, int questionid, int answerid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}/{4}", WEBAPIROOT, "api/test/complete", testid, questionid, answerid);
+      App.LogIt.LogInfo(string.Format("CompleteTest-{0}", fullurl));
 
       try {
         await DoRequest(fullurl);
@@ -291,6 +326,7 @@ namespace JolTudomE_WP {
 
     internal async Task CancelTest(int testid, int personid) {
       string fullurl = string.Format("{0}/{1}/{2}/{3}", WEBAPIROOT, "api/test/cancel", testid, personid);
+      App.LogIt.LogInfo(string.Format("CancelTest-{0}", fullurl));
 
       try {
         await DoRequest(fullurl);
@@ -303,6 +339,7 @@ namespace JolTudomE_WP {
 
     internal async Task SuspendTest(int testid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/suspend", testid);
+      App.LogIt.LogInfo(string.Format("SuspendTest-{0}", fullurl));
 
       try {
         await DoRequest(fullurl);
@@ -314,6 +351,7 @@ namespace JolTudomE_WP {
 
     internal async Task ResumeTest(int testid) {
       string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/resume", testid);
+      App.LogIt.LogInfo(string.Format("ResumeTest-{0}", fullurl));
 
       try {
         await DoRequest(fullurl);
@@ -321,6 +359,20 @@ namespace JolTudomE_WP {
       catch {
         throw;
       }
+    }
+
+    internal async Task<string> ContinueTest(int personid) {
+      string fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/test/continue", personid);
+      App.LogIt.LogInfo(string.Format("ContinueTest-{0}", fullurl));
+
+      string response = string.Empty;
+      try {
+        response = await DoRequest(fullurl);
+      }
+      catch {
+        throw;
+      }
+      return response;
     }
   }
 }

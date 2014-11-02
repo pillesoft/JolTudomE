@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -11,7 +12,7 @@ using System.Net.Http;
 using System.Web.Http;
 
 namespace JolTudomE_Api.Controllers {
-  
+
   [RoutePrefix("api/test")]
   [Authorize]
   public class TestController : BaseController {
@@ -19,17 +20,42 @@ namespace JolTudomE_Api.Controllers {
     [Route("statistic/{personid:int}")]
     public IEnumerable<usp_Statistics_Result> GetStatistics(int personid) {
       var id = (CustomIdentity)User.Identity;
-      var statistics = DBContext.usp_Statistics(personid, id.PersonID, id.RoleID).OrderByDescending(s => s.Generated);
-      UpdateSession();
+      IOrderedEnumerable<usp_Statistics_Result> statistics = null;
+      try {
+        statistics = DBContext.usp_Statistics(personid, id.PersonID, id.RoleID).OrderByDescending(s => s.Generated);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
       return statistics;
     }
 
     [Route("detail/{testid}/{personid:int}")]
     public IEnumerable<usp_Eval_Result> GetTestDetails(int testid, int personid) {
       var id = (CustomIdentity)User.Identity;
-
-      var details = DBContext.usp_Eval(testid, personid, id.PersonID, id.RoleID);
-      UpdateSession();
+      ObjectResult<usp_Eval_Result> details = null;
+      try {
+        details = DBContext.usp_Eval(testid, personid, id.PersonID, id.RoleID);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
 
       return details;
     }
@@ -61,7 +87,7 @@ namespace JolTudomE_Api.Controllers {
 
       string connstring = System.Configuration.ConfigurationManager.ConnectionStrings["JolTudomEEntities"].ConnectionString;
       string searchterm = ";provider connection string=\"";
-      connstring = connstring.Substring(connstring.IndexOf(searchterm)+searchterm.Length);
+      connstring = connstring.Substring(connstring.IndexOf(searchterm) + searchterm.Length);
       connstring = connstring.Substring(0, connstring.IndexOf('"'));
 
       var conn = new SqlConnection(connstring);
@@ -85,17 +111,36 @@ namespace JolTudomE_Api.Controllers {
         if (closed) conn.Close();
       }
 
-      NewTest newtest = new NewTest();
-      newtest.TestID = int.Parse(dtresult.Rows[0]["TestID"].ToString());
-      newtest.PersonID = int.Parse(dtresult.Rows[0]["PersonID"].ToString());
+      List<usp_ContineTest_Result> resultlist = new List<usp_ContineTest_Result>();
+      foreach (DataRow drow in dtresult.Rows) {
+        resultlist.Add(new usp_ContineTest_Result {
+          TestID = int.Parse(drow["TestID"].ToString()),
+          PersonID = int.Parse(drow["PersonID"].ToString()),
+          QuestionID = int.Parse(drow["QuestionID"].ToString()),
+          QuestionText = drow["QuestionText"].ToString(),
+          AnswerID = int.Parse(drow["AnswerID"].ToString()),
+          AnswerText = drow["AnswerText"].ToString(),
+        });
+      }
 
-      int questid = int.Parse(dtresult.Rows[0]["QuestionID"].ToString());
-      string questtext = dtresult.Rows[0]["QuestionText"].ToString();
+      NewTest newtest = ParseNewContinueResult(resultlist);
+      UpdateSession();
+
+      return newtest;
+    }
+
+    private NewTest ParseNewContinueResult(List<usp_ContineTest_Result> result) {
+      NewTest newtest = new NewTest();
+      newtest.TestID = result.First().TestID;
+      newtest.PersonID = result.First().PersonID;
+
+      int questid = result.First().QuestionID;
+      string questtext = result.First().QuestionText;
 
       List<NewTestQuestAnswer> questanswlist = new List<NewTestQuestAnswer>();
 
-      foreach (DataRow drow in dtresult.Rows) {
-        if (questid != int.Parse(drow["QuestionID"].ToString())) {
+      foreach (usp_ContineTest_Result row in result) {
+        if (questid != row.QuestionID) {
 
           var testq = new NewTestQuestion {
             QuestionID = questid,
@@ -104,15 +149,15 @@ namespace JolTudomE_Api.Controllers {
           };
           newtest.Questions.Add(testq);
 
-          questid = int.Parse(drow["QuestionID"].ToString());
-          questtext = drow["QuestionText"].ToString();
+          questid = row.QuestionID;
+          questtext = row.QuestionText;
 
           questanswlist = new List<NewTestQuestAnswer>();
         }
 
         questanswlist.Add(new NewTestQuestAnswer {
-          AnswerID = int.Parse(drow["AnswerID"].ToString()),
-          AnswerText = drow["AnswerText"].ToString(),
+          AnswerID = (int)row.AnswerID,
+          AnswerText = row.AnswerText,
         });
 
       }
@@ -122,8 +167,6 @@ namespace JolTudomE_Api.Controllers {
         Answers = questanswlist
       });
 
-      UpdateSession();
-
       return newtest;
     }
 
@@ -131,9 +174,20 @@ namespace JolTudomE_Api.Controllers {
     [HttpGet]
     public IHttpActionResult CheckTest(int testid, int questionid, int answerid) {
       var id = (CustomIdentity)User.Identity;
-
-      DBContext.usp_CheckedAnswer(testid, questionid, answerid, false);
-      UpdateSession();
+      try {
+        DBContext.usp_CheckedAnswer(testid, questionid, answerid, false);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
 
       return Ok();
     }
@@ -147,22 +201,39 @@ namespace JolTudomE_Api.Controllers {
         UpdateSession();
       }
       catch (EntityCommandExecutionException ece_exc) {
-        throw ece_exc.InnerException;
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
       }
       return Ok();
     }
 
-    [Route("cancel/{testid}")]
+    [Route("cancel/{testid}/{personid}")]
     [HttpGet]
     public IHttpActionResult Cancel(int testid, int personid) {
       var id = (CustomIdentity)User.Identity;
-
-      DBContext.usp_CancelTest(testid, personid);
-      UpdateSession();
+      try {
+        DBContext.usp_CancelTest(testid, personid);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
 
       return Ok();
     }
-
 
     [Route("suspend/{testid}")]
     [HttpGet]
@@ -173,7 +244,14 @@ namespace JolTudomE_Api.Controllers {
         UpdateSession();
       }
       catch (EntityCommandExecutionException ece_exc) {
-        throw ece_exc.InnerException;
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
       }
       return Ok();
     }
@@ -187,10 +265,41 @@ namespace JolTudomE_Api.Controllers {
         UpdateSession();
       }
       catch (EntityCommandExecutionException ece_exc) {
-        throw ece_exc.InnerException;
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
       }
+
       return Ok();
     }
 
+    [Route("continue/{personid}")]
+    [HttpGet]
+    public NewTest ContinueTest(int personid) {
+      NewTest conttest;
+      try {
+        var result = DBContext.usp_ContineTest(personid);
+
+        conttest = ParseNewContinueResult(result.ToList());
+
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
+      return conttest;
+    }
   }
 }

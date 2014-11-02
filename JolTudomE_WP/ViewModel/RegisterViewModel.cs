@@ -24,7 +24,7 @@ namespace JolTudomE_WP.ViewModel {
         return _RegisterCommand
       ?? (_RegisterCommand = new RelayCommand(
       async () => {
-        if (NewUser.IsValid) {
+        if (!NewUser.IsValid) {
           ((App)App.Current).ShowDialog("Regisztrálási Hiba", "A beviteli mezők adatai hibásak!");
         }
         else {
@@ -34,7 +34,7 @@ namespace JolTudomE_WP.ViewModel {
             ((App)App.Current).ShowDialog("Regisztráció", "A regisztráció sikerült!");
             NavigationService.NavigateTo(PageEnum.Login);
           }
-          catch (ApiModelException mexc) {
+          catch (WebApiException mexc) {
             IsProgressBarVisible = false;
             ((App)App.Current).ShowDialog("Regisztrálási Hiba", mexc.Message);
           }

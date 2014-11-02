@@ -3,6 +3,8 @@ using JolTudomE_Api.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -50,9 +52,21 @@ namespace JolTudomE_Api.Controllers {
     [HttpGet]
     public IEnumerable<usp_GetAllUsers_Result> GetUsers(int? roleid = null) {
       var id = (CustomIdentity)User.Identity;
-      var users = DBContext.usp_GetAllUsers(id.RoleID, roleid);
-      UpdateSession();
-
+      ObjectResult<usp_GetAllUsers_Result> users = null;
+      try {
+        users = DBContext.usp_GetAllUsers(id.RoleID, roleid);
+        UpdateSession();
+      }
+      catch (EntityCommandExecutionException ece_exc) {
+        if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+          SqlException sqlexc = (SqlException)ece_exc.InnerException;
+          if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+          else throw new DBException(sqlexc.Message);
+        }
+        else {
+          throw ece_exc.InnerException;
+        }
+      }
       return users;
     }
 
@@ -68,7 +82,14 @@ namespace JolTudomE_Api.Controllers {
           return response;
         }
         catch (EntityCommandExecutionException ece_exc) {
-          throw ece_exc.InnerException;
+          if (ece_exc.InnerException.GetType() == typeof(SqlException)) {
+            SqlException sqlexc = (SqlException)ece_exc.InnerException;
+            if (sqlexc.Number == 50000) throw new SPException(sqlexc.Message);
+            else throw new DBException(sqlexc.Message);
+          }
+          else {
+            throw ece_exc.InnerException;
+          }
         }
       }
       else {

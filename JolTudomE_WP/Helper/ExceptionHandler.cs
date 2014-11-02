@@ -12,19 +12,26 @@ namespace JolTudomE_WP.Helper {
       new SPError{SPName = "Add New User Error", ErrorCode = 100, ErrorMessage = "A jelszó minimum 8 karakter kell hogy legyen"},
       new SPError{SPName = "Add New User Error", ErrorCode = 1000, ErrorMessage = "A csoport azonosító nem megfelelő"},
     };
-    
+
+    internal static string GetUserFriendlyErrorMessage(Dictionary<string, string> parsedmessage) {
+      if (parsedmessage["ExceptionType"] == "JolTudomE_Api.Models.SPException") 
+        return GetSPErrorMessage(parsedmessage["ExceptionMessage"]);
+      else
+        return parsedmessage["ExceptionMessage"];
+    }
+
     /// <summary>
     /// calculates the collection of the error codes recevied from SQL stored procedure
     /// </summary>
     /// <param name="excobj"></param>
     /// <returns>new line separated error messages</returns>
-    internal static string GetUserFriendlyErrorMessage(string sqlmessage) {
+    private static string GetSPErrorMessage(string sqlmessage) {
       string msg = string.Empty;
 
       string spname = sqlmessage.Split('.')[0];
       int code = int.Parse(sqlmessage.Split(':')[1]);
       List<int> codes = new List<int>();
-      int quotbase = 1000;
+      int quotbase = 1000000;
 
       while (true) {
         if (code >= quotbase) {
@@ -51,6 +58,7 @@ namespace JolTudomE_WP.Helper {
       msg = sb.ToString();
       return msg;
     }
+
 
   }
 }

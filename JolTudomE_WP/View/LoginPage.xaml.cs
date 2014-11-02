@@ -99,10 +99,11 @@ namespace JolTudomE_WP.View {
 
     private async void cmdLogin_Click(object sender, RoutedEventArgs e) {
       prgBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+      cmdLogin.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
       try {
         await DataSource.MakeLogin(txtUserName.Text, txtPassword.Password,
           () => {
-            if (DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
+            if (DataSource.SelectedUserInfo != null && DataSource.LoggedInInfo.PersonID == DataSource.SelectedUserInfo.PersonID) {
               NavigationService.NavigateTo(PageEnum.SelectedUser);
             }
             else {
@@ -112,10 +113,12 @@ namespace JolTudomE_WP.View {
       }
       catch (UnauthorizedException) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        cmdLogin.Visibility = Windows.UI.Xaml.Visibility.Visible;
         ((App)App.Current).ShowDialog("Bejelentkezési Hiba", "Rossz Felhasználó név vagy Jelszó!");
       }
       catch (Exception exc) {
         prgBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        cmdLogin.Visibility = Windows.UI.Xaml.Visibility.Visible;
         ((App)App.Current).ShowDialog("Bejelentkezési Hiba", exc.Message);
       }
     }

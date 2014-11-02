@@ -96,6 +96,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\APIExceptions.cs" />
     <Compile Include="Models\JolTudomE.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -122,6 +123,9 @@
     </Compile>
     <Compile Include="Models\UserDetail.cs" />
     <Compile Include="Models\usp_Authenticate_Result.cs">
+      <DependentUpon>JolTudomE.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\usp_ContineTest_Result.cs">
       <DependentUpon>JolTudomE.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\usp_Eval_Result.cs">

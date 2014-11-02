@@ -36,14 +36,12 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     private string[] _Answers;
-
     public string[] Answers {
       get { return _Answers; }
       set { SetProperty<string[]>(ref _Answers, value); }
     }
 
     private int _CheckedAnswer;
-
     public int CheckedAnswer {
       get { return _CheckedAnswer; }
       set {
@@ -52,7 +50,6 @@ namespace JolTudomE_WP.ViewModel {
         StopTestCommand.RaiseCanExecuteChanged();
       }
     }
-
 
     private RelayCommand _NextQuestionCommand;
     public RelayCommand NextQuestionCommand {
@@ -67,7 +64,6 @@ namespace JolTudomE_WP.ViewModel {
       () => CanGoNext()));
       }
     }
-
 
     private RelayCommand _StopTestCommand;
     public RelayCommand StopTestCommand {
@@ -107,9 +103,22 @@ namespace JolTudomE_WP.ViewModel {
     }
 
     public async void LoadData(object customdata) {
-      //NewTestParam p = (NewTestParam)customdata;
+
+      if (SuspensionManager.SessionState.ContainsKey("CurrentTestID")) {
+        DataSource.CurrentTest = int.Parse(SuspensionManager.SessionState["CurrentTestID"].ToString());
+        DataSource.SelectedUserInfo = (LoginResponse)SuspensionManager.SessionState["SelectedUser"];
+      }
+
       try {
-        var result = await DataSource.GenerateTest();
+        NewTest result;
+        if (DataSource.HasCurrentTest) {
+          ((App)App.Current).ShowDialog("Teszt Folytatása", "Az alkalmazást megszakították egy teszt végrehajtása közben.\nA hátramaradt kérdéseket most megválaszolhatja, vagy szakítsa meg a tesztet!");
+
+          result = await DataSource.ContinueTest();
+        }
+        else {
+          result = await DataSource.GenerateTest();
+        }
         NewTest = result;
       }
       catch { }

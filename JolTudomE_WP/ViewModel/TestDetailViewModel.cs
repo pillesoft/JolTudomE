@@ -18,9 +18,11 @@ namespace JolTudomE_WP.ViewModel {
     public TestDetailViewModel() { }
 
     public async void LoadData(object customdata) {
-      var result = await DataSource.GetTestDetail((int)customdata);
-      TestDetList = result;
-
+      try {
+        var result = await DataSource.GetTestDetail((int)customdata);
+        TestDetList = result;
+      }
+      catch { }
     }
   }
 }
