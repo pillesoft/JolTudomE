@@ -20,8 +20,14 @@
       </StackPanel>
     </DataTemplate>
     <local:ListGroupStyleSelector x:Key="listGroupStyleSelector"/>
-
   </Page.Resources>
+  <Page.BottomAppBar>
+    <CommandBar ClosedDisplayMode="Minimal"  Visibility="{Binding IsCommandBarVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+      <CommandBar.SecondaryCommands>
+        <AppBarButton Label="Mentett bejelentkezés törlése" Command="{Binding CredentialClearCommand, Mode=OneWay}"/>
+      </CommandBar.SecondaryCommands>
+    </CommandBar>
+  </Page.BottomAppBar>
   <Page.DataContext>
     <vm:LoggedInUserViewModel />
   </Page.DataContext>
@@ -37,7 +43,7 @@
     </Grid.ChildrenTransitions>
 
     <ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
-    <Pivot Title="Jól Tudom E?" Grid.Row="1">
+    <Pivot Title="Jól Tudom E?" Grid.Row="1" SelectedIndex="{Binding SelectedPivotIndex, Mode=TwoWay}">
       <PivotItem Header="Felhasználók">
         <ListView x:Name="UserListView" ItemsSource="{Binding UserListGrouped.View}"
 					ItemTemplate="{StaticResource UserListDataTemplate}"

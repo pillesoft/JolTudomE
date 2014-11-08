@@ -264,6 +264,13 @@
       </Grid>
     </DataTemplate>
   </Page.Resources>
+  <Page.BottomAppBar>
+    <CommandBar ClosedDisplayMode="Minimal"  Visibility="{Binding IsCommandBarVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+      <CommandBar.SecondaryCommands>
+        <AppBarButton Label="Mentett bejelentkezés törlése" Command="{Binding CredentialClearCommand, Mode=OneWay}"/>
+      </CommandBar.SecondaryCommands>
+    </CommandBar>
+  </Page.BottomAppBar>
   <Page.DataContext>
     <vm:SelectedUserViewModel />
   </Page.DataContext>
@@ -281,7 +288,7 @@
       <RowDefinition/>
     </Grid.RowDefinitions>
     <ProgressBar IsIndeterminate="True" Grid.Row="0" Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}" />
-    <Pivot x:Name="pvt" Title="{Binding SelectedUser}" Grid.Row="1" TitleTemplate="{StaticResource PivotTitleTemplate}">
+    <Pivot x:Name="pvt" Title="{Binding SelectedUser}" Grid.Row="1" TitleTemplate="{StaticResource PivotTitleTemplate}" SelectedIndex="{Binding SelectedPivotIndex, Mode=TwoWay}">
       <PivotItem Header="Statisztika">
         <Grid>
           <TextBlock Text="Nincsen még befejezett Teszt!" FontSize="22" TextWrapping="WrapWholeWords"

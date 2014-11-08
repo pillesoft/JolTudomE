@@ -9,6 +9,33 @@ using Windows.UI.Xaml.Data;
 namespace JolTudomE_WP.ViewModel {
   public class LoggedInUserViewModel : BaseNotifyable, IViewModel {
 
+    private int _SelectedPivotIndex;
+    public int SelectedPivotIndex {
+      get { return _SelectedPivotIndex; }
+      set {
+        SetProperty<int>(ref _SelectedPivotIndex, value);
+        IsCommandBarVisible = _SelectedPivotIndex == 1;
+      }
+    }
+
+    private bool _IsCommandBarVisible;
+    public bool IsCommandBarVisible {
+      get { return _IsCommandBarVisible; }
+      set { SetProperty<bool>(ref _IsCommandBarVisible, value); }
+    }
+
+    private RelayCommand _CredentialClearCommand;
+    public RelayCommand CredentialClearCommand {
+      get {
+        return _CredentialClearCommand
+      ?? (_CredentialClearCommand = new RelayCommand(
+      () => {
+        ((App)App.Current).ClearCredential();
+      },
+      () => true));
+      }
+    }
+
     private bool _ShowProgressBar;
     public bool ShowProgressBar {
       get { return _ShowProgressBar; }

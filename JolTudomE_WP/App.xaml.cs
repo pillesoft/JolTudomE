@@ -238,7 +238,16 @@ namespace JolTudomE_WP {
 
     public void SaveCredential(string username, string password) {
       PasswordVault vault = new PasswordVault();
+      
+      ClearCredential();
 
+      // save the new credential
+      PasswordCredential cred = new PasswordCredential(_CredLockerResource, username, password);
+      vault.Add(cred);
+    }
+
+    public void ClearCredential() {
+      PasswordVault vault = new PasswordVault();
       // remove the already saved credentials
       try {
         var credcoll = vault.FindAllByResource(_CredLockerResource);
@@ -247,10 +256,6 @@ namespace JolTudomE_WP {
         }
       }
       catch { /* that means there is no saved credential */}
-
-      // save the new credential
-      PasswordCredential cred = new PasswordCredential(_CredLockerResource, username, password);
-      vault.Add(cred);
     }
 
     private PasswordCredential GetCredential() {
