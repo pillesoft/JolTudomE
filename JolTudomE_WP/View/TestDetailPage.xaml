@@ -11,22 +11,36 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   <Page.Resources>
     <Helper:BoolToTestDetImageSourceConverter x:Key="BoolToImageSourceConverter"/>
+    <Style TargetType="TextBlock" x:Key="StyleValasz">
+      <Setter Property="Margin" Value="10,0,0,2" />
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="TextWrapping" Value="WrapWholeWords" />
+    </Style>
+    <Style TargetType="TextBlock" x:Key="StyleCaption">
+      <Setter Property="Margin" Value="0,2,0,0" />
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontStyle" Value="Italic" />
+    </Style>
     <DataTemplate x:Key="TestDetListDataTemplate">
-      <Grid Margin="3">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition/>
-          <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-        </Grid.RowDefinitions>
-        <Image Source="{Binding IsGood, Converter={StaticResource BoolToImageSourceConverter}, Mode=OneWay}" Width="70" Height="70" Grid.RowSpan="3" />
-        <TextBlock Text="{Binding QuestionText}" Grid.Column="1" Margin="2,2,0,2" FontSize="20" FontWeight="Bold" TextWrapping="WrapWholeWords" />
-        <TextBlock Text="{Binding ChekedAnswer}" Grid.Column="1" Grid.Row="1" Margin="10,2,0,2" FontSize="15" TextWrapping="WrapWholeWords" />
-        <TextBlock Text="{Binding CorrectAnswer}" FontSize="15" Margin="10,2,0,2" Grid.Column="1" Grid.Row="2" TextWrapping="WrapWholeWords" />
-      </Grid>
+      <StackPanel Margin="3" Orientation="Horizontal">
+        <Image Source="{Binding IsGood, Converter={StaticResource BoolToImageSourceConverter}, Mode=OneWay}" Width="70" Height="70" />
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <TextBlock Text="Kérdés:" Grid.Row="0" Style="{StaticResource StyleCaption}" />
+          <TextBlock Text="{Binding QuestionText}" Margin="2,0,0,2" FontSize="20" FontWeight="Bold" TextWrapping="WrapWholeWords" Grid.Row="1" />
+          <TextBlock Text="Felhasználó válasza:" Grid.Row="2" Style="{StaticResource StyleCaption}"/>
+          <TextBlock Text="{Binding ChekedAnswer}" Grid.Row="3" Style="{StaticResource StyleValasz}" />
+          <TextBlock Text="Jó válasz:" Grid.Row="4" Style="{StaticResource StyleCaption}"/>
+          <TextBlock Text="{Binding CorrectAnswer}" Grid.Row="5" Style="{StaticResource StyleValasz}" />
+        </Grid>
+      </StackPanel>
     </DataTemplate>
   </Page.Resources>
 

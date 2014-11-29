@@ -15,7 +15,16 @@ namespace JolTudomE_WP.ViewModel {
       set { SetProperty<List<TestDetail>>(ref _TestDetList, value); }
     }
 
-    public TestDetailViewModel() { }
+    public TestDetailViewModel() {
+      /*
+       * design time data
+      TestDetList = new List<TestDetail> {
+        new TestDetail{QuestionText = "Ez a kerdes", ChekedAnswer = "Felhasznalo valasza", CorrectAnswer = "jo valasz"},
+        new TestDetail{QuestionText = "Ez 2. a kerdes", ChekedAnswer = "Felhasznalo 2. valasza", CorrectAnswer = "jo 2. valasz"},
+        new TestDetail{QuestionText = "Ez 3. a kerdes", ChekedAnswer = "3. valasz", CorrectAnswer = "3. valasz"},
+      };
+      */
+    }
 
     public async void LoadData(object customdata) {
       try {

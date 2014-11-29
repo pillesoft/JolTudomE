@@ -217,7 +217,7 @@ namespace JolTudomE_WP {
         fullurl = string.Format("{0}/{1}", WEBAPIROOT, "api/account/searchbyrole");
       }
       else {
-        fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/account/searchbyrole/roletosearch");
+        fullurl = string.Format("{0}/{1}/{2}", WEBAPIROOT, "api/account/searchbyrole", roletosearch);
       }
       App.LogIt.LogInfo(string.Format("GetUserList-{0}", fullurl));
       string response = string.Empty;
