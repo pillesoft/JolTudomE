@@ -14,7 +14,7 @@ namespace LoggerWP {
     Error
   }
 
-  public class Logger : IDisposable {
+  public sealed class Logger : IDisposable {
     private StorageFolder _SDCard;
     private StorageFolder _LogFolder;
     private string _FileName;
