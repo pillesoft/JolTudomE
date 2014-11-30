@@ -17,6 +17,7 @@ namespace JolTudomE_Api.Security {
   /// this thrown when the session is expired, 
   /// if the session is not found - could be that it is over of the timeout, so removed
   /// </summary>
+  [Serializable]
   public class SessionNotAvailable : ApplicationException { }
 
   public class SessionManager {

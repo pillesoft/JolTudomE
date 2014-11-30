@@ -38,12 +38,12 @@ namespace JolTudomE_WP {
     private const string WEBAPIROOT = "http://localhost:1854";
 
     private string GetResponse(HttpWebResponse webresp) {
-      using (Stream dataStream = webresp.GetResponseStream()) {
-        using (StreamReader reader = new StreamReader(dataStream)) {
-          string responseFromServer = reader.ReadToEnd();
-          return responseFromServer;
-        }
+      Stream dataStream = webresp.GetResponseStream();
+      using (StreamReader reader = new StreamReader(dataStream)) {
+        string responseFromServer = reader.ReadToEnd();
+        return responseFromServer;
       }
+
     }
 
     private async Task<string> DoRequest(string url) {
