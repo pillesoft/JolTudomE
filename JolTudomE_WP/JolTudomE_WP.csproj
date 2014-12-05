@@ -223,6 +223,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="EditableNotifyable.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JolTudomE_WS", "JolTudomE_WS\JolTudomE_WS.csproj", "{065EFBF9-9C01-49D6-A41B-8F999838994E}"
 EndProject
@@ -25,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerWP", "LoggerWP\LoggerWP.csproj", "{0911FB92-6815-454E-9BB3-8B2FE6CB35E3}"
 EndProject
 Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "WP_Model", "WP_Model\WP_Model.modelproj", "{C0E11645-7C01-48B7-B103-7657B6835B45}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "Database\Database.sqlproj", "{E0F5B963-7DE9-4B02-B138-6356372845E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,6 +142,22 @@ Global
 		{C0E11645-7C01-48B7-B103-7657B6835B45}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C0E11645-7C01-48B7-B103-7657B6835B45}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C0E11645-7C01-48B7-B103-7657B6835B45}.Release|x86.ActiveCfg = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
+		{E0F5B963-7DE9-4B02-B138-6356372845E9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
