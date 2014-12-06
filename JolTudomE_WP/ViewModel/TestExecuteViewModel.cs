@@ -115,6 +115,7 @@ namespace JolTudomE_WP.ViewModel {
           ((App)App.Current).ShowDialog("Teszt Folytatása", "Az alkalmazást megszakították egy teszt végrehajtása közben.\nA hátramaradt kérdéseket most megválaszolhatja, vagy szakítsa meg a tesztet!");
 
           result = await DataSource.ContinueTest();
+          SuspensionManager.SessionState.Remove("CurrentTestID");
         }
         else {
           result = await DataSource.GenerateTest();

@@ -199,6 +199,8 @@ namespace JolTudomE_WP {
       LogIt.LogInfo("App-Resuming");
 
       if (DataSource.HasCurrentTest) {
+        SuspensionManager.SessionState.Remove("CurrentTestID");
+
         await DataSource.ResumeTest();
       }
     }

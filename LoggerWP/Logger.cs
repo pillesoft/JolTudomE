@@ -41,11 +41,15 @@ namespace LoggerWP {
     }
 
     private async Task Write(string msg) {
-      MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(msg));
-      byte[] msgbyte = ms.ToArray();
+      try {
+        MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(msg));
+        byte[] msgbyte = ms.ToArray();
 
-      await _Stream.WriteAsync(msgbyte, 0, msgbyte.Length);
-      await _Stream.FlushAsync();
+        await _Stream.WriteAsync(msgbyte, 0, msgbyte.Length);
+        await _Stream.FlushAsync();
+
+      }
+      catch (NullReferenceException) {}
     }
 
     private async void Logit(string msg, LogLevel level) {
